@@ -1,28 +1,37 @@
 import './App.css';
+import React from 'react';
+import TitleScreen from "./TitleScreen";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Button from '@material-ui/core/Button';
+/*
+class SessionProvider{
+  create(){return "";}
+  get(sessionID){return {};}
+  update(sessionID, action){return {};}
+  close(sessionID){}
+};
+*/
 
 function App() {
-  const menuItems = [
-    "Create Room",
-    "Join Room",
-    "Practice",
-    "Settings"
-  ];
-  const listItems = menuItems.map( (text) =>
-    <ListItem key={text}>
-        <Button variant="contained" style={{width: "100%"}} aria-label={text}>{text}</Button>
-    </ListItem>
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
   );
 
   return (
-    <div className="App">
-        <List aria-label="menu">
-          {listItems}
-        </List>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      {TitleScreen({})}
+    </ThemeProvider>
   );
 }
 

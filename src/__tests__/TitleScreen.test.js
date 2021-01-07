@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import App from '../App';
+import TitleScreen from '../TitleScreen';
 
 test('renders menu correctly', () => {
-  render(<App />);
+  render(<TitleScreen />);
   const menuElement = screen.getByLabelText("menu");
   expect(menuElement).toBeInTheDocument();
 
