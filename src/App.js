@@ -1,9 +1,17 @@
 import './App.css';
 import React from 'react';
-import TitleScreen from "./TitleScreen";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
+import TitleScreen from "./TitleScreen";
+import OthelloBoard from "./boards/OthelloBoard"
 
 /*
 class SessionProvider{
@@ -28,10 +36,19 @@ function App() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline/>
-      {TitleScreen({})}
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
+          <Switch>
+            <Route exact path="/">
+              <TitleScreen />
+            </Route>
+            <Route exact path="/othello">
+              <OthelloBoard />
+            </Route>
+          </Switch>
+      </ThemeProvider>
+    </Router>
   );
 }
 
