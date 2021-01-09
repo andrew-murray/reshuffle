@@ -28,17 +28,23 @@ class Counter extends React.Component {
     // todo: consider using css shading from this snippet
     // https://codepen.io/aush/pen/XKKVyo
 
-    const onMouseOver = ()=>{
+    const onMouseOver = () => {
       if(this.props.hoverColor)
       {
-        this.setState( {color: this.props.hoverColor} );
+        this.setState( {
+          color: this.props.hoverColor,
+          opacity: this.props.hoverOpacity
+        } );
       }
     };
 
-    const onMouseOut = ()=>{
+    const onMouseOut = () => {
       if(this.props.hoverColor)
       {
-        this.setState( {color: this.props.color} );
+        this.setState( {
+          color: this.props.color,
+          opacity: 1.0
+        } );
       }
     };
 
@@ -49,6 +55,7 @@ class Counter extends React.Component {
         width={this.props.width}
         height={this.props.height}
         fill={this.state.color}
+        opacity={this.state.opacity}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
       />
@@ -56,18 +63,20 @@ class Counter extends React.Component {
   }
 }
 
+Counter.defaultProps = {
+  hoverOpacity: 0.5
+};
+
 Counter.propTypes = {
+
   // color to be displayed by default
-  color: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.array
-  ]).isRequired,
+  color: PropTypes.string.isRequired,
 
   // color to be displayed on hover
-  hoverColor:  PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.array
-  ])
+  hoverColor:  PropTypes.string,
+
+  // opacity to be applied when hovered
+  hoverOpacity: PropTypes.number
 };
 
 class OthelloBoard extends Component {
@@ -89,13 +98,14 @@ class OthelloBoard extends Component {
     const defaultColorForCellState = (cellState, pos) => {
       return cellState === OthelloRules.labels.white ? "white"
            : cellState === OthelloRules.labels.black ? "black"
-                                                     : "green";
+                                                     : "#b87340";
     };
 
     const hoverColorForCellState = (cellState, pos) => {
+      const colorForPlayer = this.state.player === OthelloRules.labels.white ? "white" : "black";
       return cellState === OthelloRules.labels.white ? undefined
            : cellState === OthelloRules.labels.black ? undefined
-           : moveIsPossible(pos)                     ? this.props.possibleColor
+           : moveIsPossible(pos)                     ? colorForPlayer
                                                      : this.props.impossibleColor;
     };
 
@@ -126,7 +136,7 @@ class OthelloBoard extends Component {
             x={xStart}
             width={cellWidth}
             height={cellHeight}
-            color={"green"}
+            color={"#b87340"}
           />
           { showCounterForCell(cellState, [y,x]) &&
             <Counter
