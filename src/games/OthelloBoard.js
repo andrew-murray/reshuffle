@@ -13,6 +13,11 @@ class Cell extends React.Component {
         height={this.props.height}
         fill={this.props.color}
         shadowBlur={5}
+
+        // general events
+        onClick={this.props.onClick}
+        onTap={this.props.onTap}
+        onDblTap={this.props.onDblTap}
       />
     );
   }
@@ -23,13 +28,12 @@ class Counter extends React.Component {
     color: this.props.color
   }
 
-
   render() {
     // todo: consider using css shading from this snippet
     // https://codepen.io/aush/pen/XKKVyo
 
     const onMouseOver = () => {
-      if(this.props.hoverColor)
+      if(this.props.hoverColor || this.props.hoverOpacity)
       {
         this.setState( {
           color: this.props.hoverColor,
@@ -39,7 +43,9 @@ class Counter extends React.Component {
     };
 
     const onMouseOut = () => {
-      if(this.props.hoverColor)
+      if(
+        this.props.color !== this.state.color
+        || this.props.opacity !== this.state.opacity)
       {
         this.setState( {
           color: this.props.color,
@@ -47,6 +53,9 @@ class Counter extends React.Component {
         } );
       }
     };
+
+    // todo: this is kinda no good - because clicking kinda
+    // updates the cell but not really
 
     return (
       <Circle
@@ -58,6 +67,11 @@ class Counter extends React.Component {
         opacity={this.state.opacity}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
+
+        // general events
+        onClick={this.props.onClick}
+        onTap={this.props.onTap}
+        onDblTap={this.props.onDblTap}
       />
     )
   }
@@ -80,13 +94,11 @@ Counter.propTypes = {
 };
 
 class OthelloBoard extends Component {
-  state = {
-    player: OthelloRules.labels.black
-  }
   render() {
+    console.log("rerender board??");
     const availableMoves = OthelloRules.changesForAllPositions(
       this.props.game,
-      this.state.player
+      this.props.player
     );
 
     const width = this.props.width;
@@ -102,16 +114,17 @@ class OthelloBoard extends Component {
     };
 
     const hoverColorForCellState = (cellState, pos) => {
-      const colorForPlayer = this.state.player === OthelloRules.labels.white ? "white" : "black";
+      const colorForPlayer = this.props.player === OthelloRules.labels.white ? "white" : "black";
       return cellState === OthelloRules.labels.white ? undefined
            : cellState === OthelloRules.labels.black ? undefined
-           : moveIsPossible(pos)                     ? colorForPlayer
+           : moveIsPossible(cellState, pos)          ? colorForPlayer
                                                      : this.props.impossibleColor;
     };
 
-    const moveIsPossible = (pos) =>
+    const moveIsPossible = (cellState, pos) =>
     {
-      return availableMoves.filter(
+      const empty = cellState === OthelloRules.labels.empty;
+      return empty && availableMoves.filter(
         move => move.position[0] === pos[0] && move.position[1] === pos[1]
       ).length > 0;
     };
@@ -123,11 +136,24 @@ class OthelloBoard extends Component {
           || (this.props.possibleColor && moveIsPossible(pos));
     };
 
+    const makeMove = (y,x,possible)=>
+    {
+      if(this.props.onMove && possible)
+      {
+        this.props.onMove( {position: [y,x], role: this.props.player} );
+      }
+    };
+
     const makeCell = (y,x,cellState) => {
       const cellWidth = width / columns;
       const cellHeight =  height / rows;
       const yStart = y * cellHeight;
       const xStart = x * cellWidth;
+      const clickHandler = (event) => {
+        makeMove(y,x,moveIsPossible(cellState, [y,x]));
+      };
+      // fixme: I think the hover functionality should really be on the cell
+      // and they should be wrapped together as one component
       return (
         <React.Fragment>
           <Cell
@@ -137,6 +163,9 @@ class OthelloBoard extends Component {
             width={cellWidth}
             height={cellHeight}
             color={"#b87340"}
+            onClick={clickHandler}
+            onTap={clickHandler}
+            onDblTap={clickHandler}
           />
           { showCounterForCell(cellState, [y,x]) &&
             <Counter
@@ -147,6 +176,9 @@ class OthelloBoard extends Component {
               height={cellHeight * 0.85}
               color={defaultColorForCellState(cellState, [y,x])}
               hoverColor={hoverColorForCellState(cellState, [y,x])}
+              onClick={clickHandler}
+              onTap={clickHandler}
+              onDblTap={clickHandler}
             />
           }
         </React.Fragment>

@@ -145,6 +145,24 @@ const canPlay = (game, role, pos) => {
     return changes.length > 0;
 };
 
+const createBoardStateWithMove = (game, position, role) => {
+  let mutatedGame = [];
+  for(const rowIndex of [...Array(game.length).keys()])
+  {
+    if(rowIndex === position[0])
+    {
+      let mutatedRow = Array.from(game[rowIndex]);
+      mutatedRow[position[1]] = role;
+      mutatedGame.push(mutatedRow);
+    }
+    else
+    {
+      mutatedGame.push(Array.from(game[rowIndex]));
+    }
+  }
+  return mutatedGame;
+}
+
 const createInitialBoardState = () => {
   const e = labels.empty;
   const w = labels.white;
@@ -167,9 +185,9 @@ const changesForAllPositions = (game, role) => {
     return [];
   }
   let results = [];
-  for(const y of [...Array(8).keys()])
+  for(const y of [...Array(game.length).keys()])
   {
-    for(const x of [...Array(8).keys()])
+    for(const x of [...Array(game[0].length).keys()])
     {
       const changes = changesFromPlay(game, role, [y,x]);
       if(changes.length > 0)
@@ -185,6 +203,7 @@ export default {
   canPlay,
   changesForAllPositions,
   comparePosition,
+  createBoardStateWithMove,
   createInitialBoardState,
   changesFromPlay,
   isGameCoordinate,

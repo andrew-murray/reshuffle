@@ -10,8 +10,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import TitleScreen from "./TitleScreen";
-import OthelloBoard from "./games/OthelloBoard"
-import OthelloRules from "./games/OthelloRules";
+import OthelloGame from "./games/OthelloGame"
 
 /*
 class SessionProvider{
@@ -44,13 +43,7 @@ function App() {
               <TitleScreen />
             </Route>
             <Route exact path="/othello">
-              <OthelloBoard
-                width={400}
-                height={400}
-                game={OthelloRules.createInitialBoardState()}
-                possibleColor="purple"
-                impossibleColor="red"
-              />
+              <OthelloGame />
             </Route>
           </Switch>
       </ThemeProvider>
