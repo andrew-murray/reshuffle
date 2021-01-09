@@ -17,13 +17,13 @@ const NEIGHBOUR_OFFSETS = [
 ];
 
 const opponentForPlayer = (role) => {
-  if(role !== labels.black || role !== labels.white)
+  if(role !== labels.black && role !== labels.white)
   {
     throw Error(
       "Invalid player provided to opponentForPlayer: " + role.toString()
     );
   }
-  return role === BLACK ? WHITE : BLACK;
+  return role === labels.black ? labels.white : labels.black;
 };
 
 const isGameCoordinate = (game, pos) => {
@@ -33,7 +33,7 @@ const isGameCoordinate = (game, pos) => {
     pos[0] < game.length &&
     0 <= pos[1] &&
     pos[1] < game[0].length
-  )
+  );
 };
 
 const addPositions = (pos1,pos2) => {
@@ -43,6 +43,24 @@ const addPositions = (pos1,pos2) => {
 const scaleOffset = (pos, scale) => {
   return [pos[0] * scale, pos[1] * scale];
 }
+
+const comparePosition = (a,b) => {
+  // negative value <=> a < b
+  // positive value <=> a > b
+  // 0 <=> a == b
+  if( a[0] !== b[0] )
+  {
+    return a[0] < b[0] ? -1 : +1;
+  }
+  else if( a[1] !== b[1] )
+  {
+    return a[1] < b[1] ? -1 : +1;
+  }
+  else
+  {
+    return 0;
+  }
+};
 
 const changesFromPlay = (game, role, pos) =>
 {
@@ -59,16 +77,16 @@ const changesFromPlay = (game, role, pos) =>
     const adjPos = addPositions(pos, offset);
     if(isGameCoordinate(game, adjPos) && game[adjPos[0]][adjPos[1]] === opponent)
     {
-      const boundaryDistances = [
-        offset[0] < 0 ? pos[0] : ( offset[0] > 0 ? gameHeight - pos[0] - 1 : Infinity),
-        offset[1] < 0 ? pos[1] : ( offset[1] > 0 ? gameWidth - pos[1] - 1 : Infinity)
-      ];
-      const distanceToBoundary = Math.min(boundaryDistances);
       let tokenRangeEnd = null;
-      for(var i = 2; i < distanceToBoundary + 1; ++i)
+      for(var i = 2; i < 8; ++i)
       {
         const positionToFlip = addPositions( pos, scaleOffset(offset, i) );
-        if( game[positionToFlip[0]][positionToFlip[1]] === role )
+        if(!isGameCoordinate(game, positionToFlip))
+        {
+          // reached the end of the board, haven't found a valid range to flip
+          break;
+        }
+        else if( game[positionToFlip[0]][positionToFlip[1]] === role )
         {
           // reached the end of a valid array of tokens to flip
           tokenRangeEnd = i;
@@ -91,8 +109,7 @@ const changesFromPlay = (game, role, pos) =>
       // inside the loop instead
       if(tokenRangeEnd)
       {
-        // note we include the played upon square in the list of changes
-        for(var i = 0; i < tokenRangeEnd; ++i)
+        for(var i = 1; i < tokenRangeEnd; ++i)
         {
           const positionToFlip = addPositions( pos, scaleOffset(offset, i) );
           changes.push( {
@@ -103,15 +120,22 @@ const changesFromPlay = (game, role, pos) =>
       }
     }
   }
-  if(!changes)
+  if(changes.length === 0)
   {
-    return {};
+    return [];
   }
+  // note we include the played upon square in the list of changes
+  // we handle that here, so that it isn't included at the end of multiple ranges
+  changes.push( {
+    position: pos,
+    outcome: role
+  } );
+  changes.sort((a,b)=>comparePosition(a.position, b.position));
   return changes;
 };
 
 const canPlay = (game, role, pos) => {
-    if(game[pos[0], pos[1]] !== labels.empty)
+    if(game[pos[0]][pos[1]] !== labels.empty)
     {
         return false;
     }
@@ -138,8 +162,9 @@ const createInitialBoardState = () => {
 };
 
 export default {
-  createInitialBoardState,
   canPlay,
+  comparePosition,
+  createInitialBoardState,
   changesFromPlay,
   isGameCoordinate,
   opponentForPlayer,
