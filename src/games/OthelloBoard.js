@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
 import OthelloRules from "./OthelloRules";
+import PropTypes from 'prop-types'
 
 class Cell extends React.Component {
   render() {
@@ -18,9 +19,28 @@ class Cell extends React.Component {
 }
 
 class Counter extends React.Component {
+  state = {
+    color: this.props.color
+  }
+
+
   render() {
     // todo: consider using css shading from this snippet
     // https://codepen.io/aush/pen/XKKVyo
+
+    const onMouseOver = ()=>{
+      if(this.props.hoverColor)
+      {
+        this.setState( {color: this.props.hoverColor} );
+      }
+    };
+
+    const onMouseOut = ()=>{
+      if(this.props.hoverColor)
+      {
+        this.setState( {color: this.props.color} );
+      }
+    };
 
     return (
       <Circle
@@ -28,11 +48,27 @@ class Counter extends React.Component {
         y={this.props.y}
         width={this.props.width}
         height={this.props.height}
-        fill={this.props.color}
+        fill={this.state.color}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
       />
     )
   }
 }
+
+Counter.propTypes = {
+  // color to be displayed by default
+  color: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array
+  ]).isRequired,
+
+  // color to be displayed on hover
+  hoverColor:  PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array
+  ])
+};
 
 class OthelloBoard extends Component {
   state = {
@@ -43,7 +79,6 @@ class OthelloBoard extends Component {
       this.props.game,
       this.state.player
     );
-    console.log(availableMoves);
 
     const width = this.props.width;
     const height = this.props.height;
@@ -51,11 +86,17 @@ class OthelloBoard extends Component {
     const rows = 8;
     const columns = 8;
 
-    const colorForCellState = (cellState, pos) => {
+    const defaultColorForCellState = (cellState, pos) => {
       return cellState === OthelloRules.labels.white ? "white"
            : cellState === OthelloRules.labels.black ? "black"
-           : (this.props.possibleColor && moveIsPossible(pos) ) ? this.props.possibleColor
-                                                                : this.props.impossibleColor;
+                                                     : "green";
+    };
+
+    const hoverColorForCellState = (cellState, pos) => {
+      return cellState === OthelloRules.labels.white ? undefined
+           : cellState === OthelloRules.labels.black ? undefined
+           : moveIsPossible(pos)                     ? this.props.possibleColor
+                                                     : this.props.impossibleColor;
     };
 
     const moveIsPossible = (pos) =>
@@ -94,7 +135,8 @@ class OthelloBoard extends Component {
               x={xStart + (cellWidth/2)}
               width={cellWidth * 0.85}
               height={cellHeight * 0.85}
-              color={colorForCellState(cellState, [y,x])}
+              color={defaultColorForCellState(cellState, [y,x])}
+              hoverColor={hoverColorForCellState(cellState, [y,x])}
             />
           }
         </React.Fragment>
