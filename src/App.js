@@ -35,6 +35,17 @@ function App() {
     [prefersDarkMode],
   );
 
+  const othelloGame = [
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,1,2,0,0,0],
+    [0,0,0,2,1,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+  ];
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
@@ -44,7 +55,7 @@ function App() {
               <TitleScreen />
             </Route>
             <Route exact path="/othello">
-              <OthelloBoard />
+              <OthelloBoard game={othelloGame} width={400} height={400}/>
             </Route>
           </Switch>
       </ThemeProvider>
