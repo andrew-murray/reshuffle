@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
-import Konva from 'konva';
+import OthelloRules from "./OthelloRules";
 
 class Cell extends React.Component {
   render() {
@@ -35,7 +35,15 @@ class Counter extends React.Component {
 }
 
 class OthelloBoard extends Component {
+  state = {
+    player: OthelloRules.labels.black
+  }
   render() {
+    const availableMoves = OthelloRules.changesForAllPositions(
+      this.props.game,
+      this.state.player
+    );
+    console.log(availableMoves);
 
     const width = this.props.width;
     const height = this.props.height;
@@ -43,12 +51,25 @@ class OthelloBoard extends Component {
     const rows = 8;
     const columns = 8;
 
-    const colorForCellState = (cellState) => {
-      return cellState == 1 ? "white" : "black";
+    const colorForCellState = (cellState, pos) => {
+      return cellState === OthelloRules.labels.white ? "white"
+           : cellState === OthelloRules.labels.black ? "black"
+           : (this.props.possibleColor && moveIsPossible(pos) ) ? this.props.possibleColor
+                                                                : this.props.impossibleColor;
     };
 
-    const showCounterForCell = (cellState) => {
-      return cellState != 0;
+    const moveIsPossible = (pos) =>
+    {
+      return availableMoves.filter(
+        move => move.position[0] === pos[0] && move.position[1] === pos[1]
+      ).length > 0;
+    };
+
+    const showCounterForCell = (cellState, pos) => {
+      return (this.props.impossibleColor && this.props.possibleColor) // short-circuit, when we're displaying everything
+          || cellState === OthelloRules.labels.white
+          || cellState === OthelloRules.labels.black
+          || (this.props.possibleColor && moveIsPossible(pos));
     };
 
     const makeCell = (y,x,cellState) => {
@@ -66,14 +87,14 @@ class OthelloBoard extends Component {
             height={cellHeight}
             color={"green"}
           />
-          { showCounterForCell(cellState) &&
+          { showCounterForCell(cellState, [y,x]) &&
             <Counter
               key={"counter-"+y.toString()+"-"+x.toString()}
               y={yStart + (cellHeight/2)}
               x={xStart + (cellWidth/2)}
               width={cellWidth * 0.85}
               height={cellHeight * 0.85}
-              color={colorForCellState(cellState)}
+              color={colorForCellState(cellState, [y,x])}
             />
           }
         </React.Fragment>

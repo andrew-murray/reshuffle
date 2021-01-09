@@ -44,7 +44,13 @@ function App() {
               <TitleScreen />
             </Route>
             <Route exact path="/othello">
-              <OthelloBoard game={OthelloRules.createInitialBoardState()} width={400} height={400}/>
+              <OthelloBoard
+                width={400}
+                height={400}
+                game={OthelloRules.createInitialBoardState()}
+                possibleColor="purple"
+                impossibleColor="red"
+              />
             </Route>
           </Switch>
       </ThemeProvider>

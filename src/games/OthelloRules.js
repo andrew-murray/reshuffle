@@ -161,8 +161,29 @@ const createInitialBoardState = () => {
   ];
 };
 
+const changesForAllPositions = (game, role) => {
+  if(game.length === 0)
+  {
+    return [];
+  }
+  let results = [];
+  for(const y of [...Array(8).keys()])
+  {
+    for(const x of [...Array(8).keys()])
+    {
+      const changes = changesFromPlay(game, role, [y,x]);
+      if(changes.length > 0)
+      {
+        results.push({position: [y,x], changeset: changes});
+      }
+    }
+  }
+  return results;
+}
+
 export default {
   canPlay,
+  changesForAllPositions,
   comparePosition,
   createInitialBoardState,
   changesFromPlay,
