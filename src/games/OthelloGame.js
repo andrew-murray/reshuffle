@@ -6,7 +6,7 @@ class OthelloGame extends Component
 {
   state = {
     game: OthelloRules.createInitialBoardState(),
-    player: OthelloRules.labels.black // how othello starts!
+    player: OthelloRules.labels.black
   }
 
   render()
@@ -23,7 +23,8 @@ class OthelloGame extends Component
           if(action.position)
           {
             this.setState( {
-              game: OthelloRules.createBoardStateWithMove(this.state.game, action.position, action.role)
+              game: OthelloRules.createBoardStateWithMove(this.state.game, action.position, action.role),
+              player: OthelloRules.opponentForPlayer(this.state.player)
             } );
           }
         }}

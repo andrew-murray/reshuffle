@@ -64,13 +64,13 @@ const comparePosition = (a,b) => {
 
 const changesFromPlay = (game, role, pos) =>
 {
-  if(game[pos[0]][pos[1]] == labels.white || game[pos[0]][pos[1]] == labels.black)
+  if(game[pos[0]][pos[1]] === labels.white || game[pos[0]][pos[1]] === labels.black)
   {
     return {};
   }
   const opponent = opponentForPlayer(role);
-  const gameWidth = game[0].length;
-  const gameHeight = game.length;
+  const gameMaxSize = Math.max(game.length, game[0].length);
+
   let changes = [];
   for(const offset of NEIGHBOUR_OFFSETS)
   {
@@ -78,7 +78,7 @@ const changesFromPlay = (game, role, pos) =>
     if(isGameCoordinate(game, adjPos) && game[adjPos[0]][adjPos[1]] === opponent)
     {
       let tokenRangeEnd = null;
-      for(var i = 2; i < 8; ++i)
+      for(let i = 2; i < gameMaxSize; ++i)
       {
         const positionToFlip = addPositions( pos, scaleOffset(offset, i) );
         if(!isGameCoordinate(game, positionToFlip))
@@ -109,7 +109,7 @@ const changesFromPlay = (game, role, pos) =>
       // inside the loop instead
       if(tokenRangeEnd)
       {
-        for(var i = 1; i < tokenRangeEnd; ++i)
+        for(let i = 1; i < tokenRangeEnd; ++i)
         {
           const positionToFlip = addPositions( pos, scaleOffset(offset, i) );
           changes.push( {
@@ -146,21 +146,17 @@ const canPlay = (game, role, pos) => {
 };
 
 const createBoardStateWithMove = (game, position, role) => {
-  let mutatedGame = [];
-  for(const rowIndex of [...Array(game.length).keys()])
+  const changes = changesFromPlay(game, role, position);
+  let boardClone = [...Array(game.length).keys()].map(
+    rowIndex => Array.from(game[rowIndex])
+  );
+  console.log(boardClone)
+  for(const change of changes )
   {
-    if(rowIndex === position[0])
-    {
-      let mutatedRow = Array.from(game[rowIndex]);
-      mutatedRow[position[1]] = role;
-      mutatedGame.push(mutatedRow);
-    }
-    else
-    {
-      mutatedGame.push(Array.from(game[rowIndex]));
-    }
+    console.log(change);
+    boardClone[ change.position[0] ][ change.position[1] ] = change.outcome;
   }
-  return mutatedGame;
+  return boardClone;
 }
 
 const createInitialBoardState = () => {
@@ -199,7 +195,7 @@ const changesForAllPositions = (game, role) => {
   return results;
 }
 
-export default {
+const moduleExports = {
   canPlay,
   changesForAllPositions,
   comparePosition,
@@ -210,3 +206,5 @@ export default {
   opponentForPlayer,
   labels
 };
+
+export default moduleExports;

@@ -3,80 +3,7 @@ import { Stage, Layer, Rect, Circle } from 'react-konva';
 import OthelloRules from "./OthelloRules";
 import PropTypes from 'prop-types'
 
-class Cell extends React.Component {
-  render() {
-    return (
-      <Rect
-        x={this.props.x}
-        y={this.props.y}
-        width={this.props.width}
-        height={this.props.height}
-        fill={this.props.color}
-        shadowBlur={5}
-
-        // general events
-        onClick={this.props.onClick}
-        onTap={this.props.onTap}
-        onDblTap={this.props.onDblTap}
-      />
-    );
-  }
-}
-
-class Counter extends React.Component {
-  state = {
-    color: this.props.color
-  }
-
-  render() {
-    // todo: consider using css shading from this snippet
-    // https://codepen.io/aush/pen/XKKVyo
-
-    const onMouseOver = () => {
-      if(this.props.hoverColor || this.props.hoverOpacity)
-      {
-        this.setState( {
-          color: this.props.hoverColor,
-          opacity: this.props.hoverOpacity
-        } );
-      }
-    };
-
-    const onMouseOut = () => {
-      if(
-        this.props.color !== this.state.color
-        || this.props.opacity !== this.state.opacity)
-      {
-        this.setState( {
-          color: this.props.color,
-          opacity: 1.0
-        } );
-      }
-    };
-
-    // todo: this is kinda no good - because clicking kinda
-    // updates the cell but not really
-
-    return (
-      <Circle
-        x={this.props.x}
-        y={this.props.y}
-        width={this.props.width}
-        height={this.props.height}
-        fill={this.state.color}
-        opacity={this.state.opacity}
-        onMouseOver={onMouseOver}
-        onMouseOut={onMouseOut}
-
-        // general events
-        onClick={this.props.onClick}
-        onTap={this.props.onTap}
-        onDblTap={this.props.onDblTap}
-      />
-    )
-  }
-}
-
+/*
 Counter.defaultProps = {
   hoverOpacity: 0.5
 };
@@ -92,10 +19,94 @@ Counter.propTypes = {
   // opacity to be applied when hovered
   hoverOpacity: PropTypes.number
 };
+*/
+
+class OthelloCell extends React.Component{
+
+  state = {
+    hovered: false
+  }
+
+  render(){
+
+    const onMouseOver = () => {
+      this.setState({hovered: true});
+    };
+
+    const onMouseOut = () => {
+      this.setState({hovered: false});
+    };
+
+    const defaultColorForCellState = (cellState) => {
+      return cellState === OthelloRules.labels.white ? "white"
+           : cellState === OthelloRules.labels.black ? "black"
+                                                     : "#b87340";
+    };
+
+    const hoverColorForCellState = (cellState, possible) => {
+      const colorForPlayer = this.props.player === OthelloRules.labels.white ? "white" : "black";
+      return cellState === OthelloRules.labels.white ? "white"
+           : cellState === OthelloRules.labels.black ? "black"
+           : possible                     ? colorForPlayer
+                                          : this.props.impossibleColor;
+    };
+
+    const hoverColor = hoverColorForCellState(this.props.gameState, this.props.possible);
+    const defaultColor = defaultColorForCellState(this.props.gameState);
+    const hoverIsDifferent = hoverColor !== defaultColor;
+
+    if(this.props.boardPosition[0] === 2 && this.props.boardPosition[1] === 4)
+    {
+      console.log(this.props);
+      console.log(this.state);
+      console.log(defaultColor);
+      console.log(hoverColor);
+    }
+
+    return(
+      <React.Fragment>
+        <Rect
+          key={"cell-"+this.props.boardPosition[0].toString()+"-"+this.props.boardPosition[1].toString()}
+          y={this.props.y}
+          x={this.props.x}
+          width={this.props.width}
+          height={this.props.height}
+
+          fill={"#b87340"}
+          shadowBlur={5}
+
+          onClick={this.props.onClick}
+          onTap={this.props.onClick}
+          onDblTap={this.props.onClick}
+
+          onMouseOver={onMouseOver}
+          onMouseOut={onMouseOut}
+        />
+        <Circle
+          key={"counter-"+this.props.boardPosition[0].toString()+"-"+this.props.boardPosition[1].toString()}
+          y={this.props.y + (this.props.height/2)}
+          x={this.props.x + (this.props.width/2)}
+          width={this.props.width * 0.85}
+          height={this.props.height * 0.85}
+
+          fill={this.state.hovered ? hoverColor: defaultColor}
+          opacity={(hoverIsDifferent && this.state.hovered) ? 0.5 : undefined }
+
+          onClick={this.props.onClick}
+          onTap={this.props.onClick}
+          onDblTap={this.props.onClick}
+
+          onMouseOver={onMouseOver}
+          onMouseOut={onMouseOut}
+        />
+      </React.Fragment>
+    );
+  }
+};
+
 
 class OthelloBoard extends Component {
   render() {
-    console.log("rerender board??");
     const availableMoves = OthelloRules.changesForAllPositions(
       this.props.game,
       this.props.player
@@ -107,33 +118,12 @@ class OthelloBoard extends Component {
     const rows = 8;
     const columns = 8;
 
-    const defaultColorForCellState = (cellState, pos) => {
-      return cellState === OthelloRules.labels.white ? "white"
-           : cellState === OthelloRules.labels.black ? "black"
-                                                     : "#b87340";
-    };
-
-    const hoverColorForCellState = (cellState, pos) => {
-      const colorForPlayer = this.props.player === OthelloRules.labels.white ? "white" : "black";
-      return cellState === OthelloRules.labels.white ? undefined
-           : cellState === OthelloRules.labels.black ? undefined
-           : moveIsPossible(cellState, pos)          ? colorForPlayer
-                                                     : this.props.impossibleColor;
-    };
-
     const moveIsPossible = (cellState, pos) =>
     {
       const empty = cellState === OthelloRules.labels.empty;
       return empty && availableMoves.filter(
         move => move.position[0] === pos[0] && move.position[1] === pos[1]
       ).length > 0;
-    };
-
-    const showCounterForCell = (cellState, pos) => {
-      return (this.props.impossibleColor && this.props.possibleColor) // short-circuit, when we're displaying everything
-          || cellState === OthelloRules.labels.white
-          || cellState === OthelloRules.labels.black
-          || (this.props.possibleColor && moveIsPossible(pos));
     };
 
     const makeMove = (y,x,possible)=>
@@ -149,39 +139,20 @@ class OthelloBoard extends Component {
       const cellHeight =  height / rows;
       const yStart = y * cellHeight;
       const xStart = x * cellWidth;
-      const clickHandler = (event) => {
-        makeMove(y,x,moveIsPossible(cellState, [y,x]));
-      };
-      // fixme: I think the hover functionality should really be on the cell
-      // and they should be wrapped together as one component
+      const movePossible = moveIsPossible(cellState, [y,x]);
+      const clickHandler = movePossible ? (event)=>{makeMove(y,x,true)} : undefined;
       return (
-        <React.Fragment>
-          <Cell
-            key={"cell-"+y.toString()+"-"+x.toString()}
-            y={yStart}
-            x={xStart}
-            width={cellWidth}
-            height={cellHeight}
-            color={"#b87340"}
-            onClick={clickHandler}
-            onTap={clickHandler}
-            onDblTap={clickHandler}
-          />
-          { showCounterForCell(cellState, [y,x]) &&
-            <Counter
-              key={"counter-"+y.toString()+"-"+x.toString()}
-              y={yStart + (cellHeight/2)}
-              x={xStart + (cellWidth/2)}
-              width={cellWidth * 0.85}
-              height={cellHeight * 0.85}
-              color={defaultColorForCellState(cellState, [y,x])}
-              hoverColor={hoverColorForCellState(cellState, [y,x])}
-              onClick={clickHandler}
-              onTap={clickHandler}
-              onDblTap={clickHandler}
-            />
-          }
-        </React.Fragment>
+        <OthelloCell
+          width={cellWidth}
+          height={cellHeight}
+          boardPosition={[y,x]}
+          player={this.props.player}
+          x={xStart}
+          y={yStart}
+          gameState={cellState}
+          possible={movePossible}
+          onClick={clickHandler}
+        />
       );
     };
 
