@@ -150,10 +150,8 @@ const createBoardStateWithMove = (game, position, role) => {
   let boardClone = [...Array(game.length).keys()].map(
     rowIndex => Array.from(game[rowIndex])
   );
-  console.log(boardClone)
   for(const change of changes )
   {
-    console.log(change);
     boardClone[ change.position[0] ][ change.position[1] ] = change.outcome;
   }
   return boardClone;

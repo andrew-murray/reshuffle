@@ -55,18 +55,9 @@ class OthelloCell extends React.Component{
     const defaultColor = defaultColorForCellState(this.props.gameState);
     const hoverIsDifferent = hoverColor !== defaultColor;
 
-    if(this.props.boardPosition[0] === 2 && this.props.boardPosition[1] === 4)
-    {
-      console.log(this.props);
-      console.log(this.state);
-      console.log(defaultColor);
-      console.log(hoverColor);
-    }
-
     return(
       <React.Fragment>
         <Rect
-          key={"cell-"+this.props.boardPosition[0].toString()+"-"+this.props.boardPosition[1].toString()}
           y={this.props.y}
           x={this.props.x}
           width={this.props.width}
@@ -83,7 +74,6 @@ class OthelloCell extends React.Component{
           onMouseOut={onMouseOut}
         />
         <Circle
-          key={"counter-"+this.props.boardPosition[0].toString()+"-"+this.props.boardPosition[1].toString()}
           y={this.props.y + (this.props.height/2)}
           x={this.props.x + (this.props.width/2)}
           width={this.props.width * 0.85}
@@ -143,6 +133,7 @@ class OthelloBoard extends Component {
       const clickHandler = movePossible ? (event)=>{makeMove(y,x,true)} : undefined;
       return (
         <OthelloCell
+          key={"othello-cell-" + y.toString() + "-" + x.toString()}
           width={cellWidth}
           height={cellHeight}
           boardPosition={[y,x]}

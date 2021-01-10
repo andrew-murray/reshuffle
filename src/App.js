@@ -42,7 +42,7 @@ function App() {
             <Route exact path="/">
               <TitleScreen />
             </Route>
-            <Route exact path="/othello">
+            <Route exact path="/practice">
               <OthelloGame />
             </Route>
           </Switch>
