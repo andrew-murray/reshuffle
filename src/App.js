@@ -38,14 +38,16 @@ function App() {
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-          <Switch>
-            <Route exact path="/">
-              <TitleScreen />
-            </Route>
-            <Route exact path="/practice">
-              <OthelloGame />
-            </Route>
-          </Switch>
+          <div className="App">
+            <Switch>
+              <Route exact path="/">
+                <TitleScreen />
+              </Route>
+              <Route exact path="/practice">
+                <OthelloGame />
+              </Route>
+            </Switch>
+          </div>
       </ThemeProvider>
     </Router>
   );

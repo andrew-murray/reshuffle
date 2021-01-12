@@ -30,11 +30,9 @@ function TitleScreen(props) {
   );
 
   return (
-    <div className="App">
-        <List aria-label="menu">
-          {listItems}
-        </List>
-    </div>
+    <List aria-label="menu">
+      {listItems}
+    </List>
   );
 }
 
