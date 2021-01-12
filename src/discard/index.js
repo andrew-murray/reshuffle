@@ -1,6 +1,12 @@
 const app = require('express')();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+// todo: only enable cors in dev?
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "http://localhost",
+    methods: ["GET", "POST"]
+  }
+});
 const chatSession = require("./chatSession")
 const othelloSession = require("./OthelloSession")
 

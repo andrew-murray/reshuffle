@@ -11,16 +11,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import TitleScreen from "./TitleScreen";
 import ChatDrawer from "./ChatDrawer";
-import OthelloGame from "./games/OthelloGame"
-
-/*
-class SessionProvider{
-  create(){return "";}
-  get(sessionID){return {};}
-  update(sessionID, action){return {};}
-  close(sessionID){}
-};
-*/
+import {OfflineOthelloGame, OnlineOthelloGame} from "./games/OthelloGame"
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -45,10 +36,10 @@ function App() {
                 <TitleScreen />
               </Route>
               <Route exact path="/practice">
-                <OthelloGame />
+                <OfflineOthelloGame />
               </Route>
               <Route path="/room/:roomID">
-                <OthelloGame />
+                <OnlineOthelloGame />
                 <ChatDrawer />
               </Route>
             </Switch>

@@ -1,4 +1,7 @@
 import React from 'react';
+
+import { useParams } from 'react-router-dom';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -7,7 +10,18 @@ import Drawer from '@material-ui/core/Drawer';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 
+import io from "socket.io-client";
+const ENDPOINT = "http://localhost:8080/";
+
 function ChatDrawer(props) {
+
+  React.useEffect(() => {
+    let socket = io(ENDPOINT);
+    window.socket = socket;
+    console.log(socket);
+  }, []);
+
+  const { roomID } = useParams();
 
   const staticMessages = [
     "Simple Message",
