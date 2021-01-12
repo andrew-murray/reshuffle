@@ -2,6 +2,7 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const chatSession = require("./chatSession")
+const othelloSession = require("./OthelloSession")
 
 const port = process.env.PORT || 8080;
 

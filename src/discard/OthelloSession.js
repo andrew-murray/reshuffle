@@ -1,20 +1,20 @@
-const OthelloRules = require("./OthelloRules");
+const OthelloRules = require("../games/OthelloRules");
 
 let sessionData = {};
 
-function initialiseStorage(storage)
+const initialiseStorage = (storage)=>
 {
   sessionData = storage;
 }
 
-const onConnect = (io, socket, roomID)
+const onConnect = (io, socket, roomID)=>
 {
   if(roomID in sessionData)
   {
     sessionData[roomID] = {
       board: OthelloRules.createInitialBoardState(),
       playerActive: Othello.labels.black,
-      players: {socket.id: Othello.labels.black},
+      players: {[socket.id]: Othello.labels.black},
       started: false
     };
   }
@@ -30,7 +30,7 @@ const onConnect = (io, socket, roomID)
   // FIXME: send out events (success/failure)
 };
 
-const swapRoles = (io,sockets,roomID)
+const swapRoles = (io,sockets,roomID)=>
 {
   if(roomID in sessionData && sessionData[roomID].started === false)
   {
@@ -42,7 +42,7 @@ const swapRoles = (io,sockets,roomID)
   // FIXME: send out events (success/failure)
 }
 
-const restartGame = (io, socket, roomID, position)
+const restartGame = (io, socket, roomID, position)=>
 {
   if(roomID in sessionData)
   {
@@ -53,7 +53,7 @@ const restartGame = (io, socket, roomID, position)
   // FIXME: send out events (success/failure)
 };
 
-const onMakeMove = (io, socket, roomID, position)
+const onMakeMove = (io, socket, roomID, position)=>
 {
   if(roomID in sessionData
     && socket.id in sessionData[roomID].players
@@ -92,7 +92,7 @@ const onMakeMove = (io, socket, roomID, position)
   }
 }
 
-const onDisconnect = (io, socket, roomID)
+const onDisconnect = (io, socket, roomID)=>
 {
   if(!io.sockets.adapter.rooms.get(roomID))
   {

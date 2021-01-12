@@ -212,16 +212,16 @@ const changesForAllPositions = (game, role) => {
 }
 
 const moduleExports = {
-  canPlay,
-  changesForAllPositions,
-  comparePosition,
-  createBoardStateWithMove,
-  createInitialBoardState,
-  changesFromPlay,
-  isGameCoordinate,
-  opponentForPlayer,
-  playerCanPlay,
-  labels
+  canPlay: canPlay,
+  changesForAllPositions: changesForAllPositions,
+  comparePosition: comparePosition,
+  createBoardStateWithMove: createBoardStateWithMove,
+  createInitialBoardState: createInitialBoardState,
+  changesFromPlay: changesFromPlay,
+  isGameCoordinate: isGameCoordinate,
+  opponentForPlayer: opponentForPlayer,
+  playerCanPlay: playerCanPlay,
+  labels: labels
 };
 
-export default moduleExports;
+module.exports = moduleExports;
