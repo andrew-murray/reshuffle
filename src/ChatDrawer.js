@@ -9,11 +9,31 @@ import Paper from '@material-ui/core/Paper';
 
 function ChatDrawer(props) {
 
-  const messages = [
+  const staticMessages = [
     "Simple Message",
     "Another Message",
-    "A third"
+    "A third",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
   ];
+
+  let [messages, setMessages] = React.useState( staticMessages );
+  let [currentMessage, setCurrentMessage] = React.useState( "" );
 
   const messageItems = [...Array(messages.length).keys()].map(messageIndex=>
     <ListItem key={"message-" + messageIndex.toString()}>
@@ -21,6 +41,20 @@ function ChatDrawer(props) {
       </ListItemText>
     </ListItem>
   );
+
+  const onMessageChange = (event)=>
+  {
+    setCurrentMessage(event.target.value);
+  };
+
+  const onChatSend = (event)=>
+  {
+    if(currentMessage){
+      setMessages(messages.concat(currentMessage));
+      setCurrentMessage("");
+    }
+    event.preventDefault();
+  }
 
   // another option for this list, is react-window?
   return (
@@ -30,15 +64,18 @@ function ChatDrawer(props) {
         style={{display: "flex", flexDirection: "row", alignItems: "flex-end"}}
       >
         <Paper
-          style={{overflow: "auto", flexGrow: 1}}
+          // column-reverse means the browser will scroll to the bottom!
+          style={{overflow: "auto", flexGrow: 1, display: "flex", flexDirection: "column-reverse"}}
           >
-          <List aria-label="menu">
+          <List aria-label="menu" >
             {messageItems}
           </List>
         </Paper>
         <div>
-          <Input inputProps={{ 'aria-label': 'enter message' }} />
-          <Button variant="contained" color="primary">Send</Button>
+          <form onSubmit={onChatSend}>
+            <Input inputProps={{ 'aria-label': 'enter message' }} value={currentMessage} onChange={onMessageChange}/>
+            <Button variant="contained" color="primary" onClick={onChatSend}>Send</Button>
+          </form>
         </div>
       </Drawer>
   );
