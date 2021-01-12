@@ -48,7 +48,7 @@ function ChatDrawer(props) {
       >
         <Paper
           // column-reverse means the browser will scroll to the bottom!
-          // fixme: this may not be a long-term solution because all the
+          // todo: this may not be a long-term solution because all the
           // chat is bottom aligned when the chat doesn't fill the page
           style={{overflow: "auto", flexGrow: 1, display: "flex", flexDirection: "column-reverse"}}
           >
