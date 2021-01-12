@@ -10,6 +10,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import TitleScreen from "./TitleScreen";
+import ChatDrawer from "./ChatDrawer";
 import OthelloGame from "./games/OthelloGame"
 
 /*
@@ -45,6 +46,10 @@ function App() {
               </Route>
               <Route exact path="/practice">
                 <OthelloGame />
+              </Route>
+              <Route path="/room/:roomID">
+                <OthelloGame />
+                <ChatDrawer />
               </Route>
             </Switch>
           </div>

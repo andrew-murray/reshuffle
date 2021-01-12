@@ -8,7 +8,7 @@ function TitleScreen(props) {
   const history = useHistory();
 
   const menuItems = [
-    {text: "Create Room"},
+    {text: "Create Room", path: "/room/default"},
     {text: "Join Room"},
     {text: "Practice", path: "/practice"},
     {text: "Settings"}
