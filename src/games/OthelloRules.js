@@ -135,14 +135,32 @@ const changesFromPlay = (game, role, pos) =>
 };
 
 const canPlay = (game, role, pos) => {
-    if(game[pos[0]][pos[1]] !== labels.empty)
+  if(!isGameCoordinate(game, pos))
+  {
+    return false;
+  }
+  if(game[pos[0]][pos[1]] !== labels.empty)
+  {
+      return false;
+  }
+  const changes = changesFromPlay(game, role, pos);
+  // othello rules dictate the only plays you can make
+  // are those which change opposing pieces
+  return changes.length > 0;
+};
+
+const playerCanPlay = (game, role) => {
+  for(const y of [...Array(game.length).keys()])
+  {
+    for(const x of [...Array(game[0].length).keys()])
     {
-        return false;
+      if(canPlay(game, role, [y,x]))
+      {
+        return true;
+      }
     }
-    const changes = changesFromPlay(game, role, pos);
-    // othello rules dictate the only plays you can make
-    // are those which change opposing pieces
-    return changes.length > 0;
+  }
+  return false;
 };
 
 const createBoardStateWithMove = (game, position, role) => {
