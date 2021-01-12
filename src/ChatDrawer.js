@@ -12,24 +12,7 @@ function ChatDrawer(props) {
   const staticMessages = [
     "Simple Message",
     "Another Message",
-    "A third",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1",
-    "1"
+    "A third"
   ];
 
   let [messages, setMessages] = React.useState( staticMessages );
