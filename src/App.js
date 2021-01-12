@@ -14,6 +14,7 @@ import ChatDrawer from "./ChatDrawer";
 import {OfflineOthelloGame, OnlineOthelloGame} from "./games/OthelloGame"
 
 function App() {
+
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(
@@ -38,10 +39,15 @@ function App() {
               <Route exact path="/practice">
                 <OfflineOthelloGame />
               </Route>
-              <Route path="/room/:roomID">
-                <OnlineOthelloGame />
-                <ChatDrawer />
-              </Route>
+              <Route
+                path="/room/:roomID/"
+                component={(props) =>
+                  <React.Fragment>
+                    <OnlineOthelloGame />
+                    <ChatDrawer match={props.match}/>
+                  </React.Fragment>
+                }
+              />
             </Switch>
           </div>
       </ThemeProvider>

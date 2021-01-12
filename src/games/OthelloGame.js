@@ -16,15 +16,24 @@ class OfflineOthelloGame extends Component
         width={400}
         height={400}
         game={this.state.game}
-        possibleColor="purple"
-        impossibleColor="red"
         player={this.state.player}
         onMove={(action)=>{
           if(action.position)
           {
+            const updatedBoardState = OthelloRules.createBoardStateWithMove(
+              this.state.game,
+              action.position,
+              action.role
+            );
+            const opponent = OthelloRules.opponentForPlayer(this.state.player);
+            const opponentCanPlay = OthelloRules.playerCanPlay(
+              updatedBoardState,
+              opponent
+            );
+            const nextPlayer = opponentCanPlay ? opponent: this.state.player;
             this.setState( {
-              game: OthelloRules.createBoardStateWithMove(this.state.game, action.position, action.role),
-              player: OthelloRules.opponentForPlayer(this.state.player)
+              game: updatedBoardState,
+              player: nextPlayer
             } );
           }
         }}
@@ -48,16 +57,11 @@ class OnlineOthelloGame extends Component
         width={400}
         height={400}
         game={this.state.game}
-        possibleColor="purple"
-        impossibleColor="red"
         player={this.state.player}
         onMove={(action)=>{
           if(action.position)
           {
-            this.setState( {
-              game: OthelloRules.createBoardStateWithMove(this.state.game, action.position, action.role),
-              player: OthelloRules.opponentForPlayer(this.state.player)
-            } );
+            // do nothing
           }
         }}
       />
