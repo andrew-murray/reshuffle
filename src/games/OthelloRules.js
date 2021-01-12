@@ -220,6 +220,7 @@ const moduleExports = {
   changesFromPlay,
   isGameCoordinate,
   opponentForPlayer,
+  playerCanPlay,
   labels
 };
 
