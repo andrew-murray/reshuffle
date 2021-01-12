@@ -19,7 +19,7 @@ function getChatHistory(roomID)
 
 function emitChatMessage(io, roomID, msg)
 {
-  io.to(roomID).emit('chat message', msg);
+  io.to(roomID).emit('chat.message', msg);
   sessionData[roomID].history.push(msg);
 }
 
@@ -52,13 +52,13 @@ function joinChatRoom(io, socket, roomID)
     socket.to(roomID).emit('chat message', "someone left...");
   });
 
-  socket.on('chat message', msg => {emitChatMessage(io, roomID, msg);});
+  socket.on('chat.message', msg => {emitChatMessage(io, roomID, msg);});
 
   for(msg of existingMessages)
   {
-    socket.emit('chat message', msg);
+    socket.emit('chat.message', msg);
   }
-  socket.to(roomID).emit('chat message', "someone joined!")
+  socket.to(roomID).emit('chat.message', "someone joined!")
 }
 
 // we adopt this slightly awkward syntax
@@ -68,10 +68,10 @@ function configureServer(io) // expects a socket.io server
 {
   io.on('connection', function(socket) {
 
-    socket.on('create', (optionalID) => {
+    socket.on('chat.create', (optionalID) => {
       if(optionalID)
       {
-        if(io.sockets.adapter.rooms.get(roomID))
+        if(io.sockets.adapter.rooms.get(optionalID))
         {
           const msg = "Attempted to create a room that already exists";
           console.log(msg);
@@ -80,7 +80,7 @@ function configureServer(io) // expects a socket.io server
         }
         else
         {
-          socket.join(roomID);
+          socket.join(optionalID);
           joinChatRoom(io, socket, optionalID)
         }
         return;
@@ -94,12 +94,15 @@ function configureServer(io) // expects a socket.io server
         socket.emit('error', msg);
         return;
       }
-      socket.join(roomID);
+      socket.join(vacantRoom);
       joinChatRoom(io, socket, vacantRoom);
     });
-    socket.on('join', (roomID)=>{
-      socket.join(roomID);
-      joinChatRoom(io,socket,roomID);
+    socket.on('chat.join', (roomID)=>{
+      if(!(roomID in socket.rooms))
+      {
+        socket.join(roomID);
+        joinChatRoom(io,socket,roomID);
+      }
     });
   });
 }
