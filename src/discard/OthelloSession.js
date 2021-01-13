@@ -43,7 +43,7 @@ const onConnect = (io, socket, roomID) =>
 
   for( playerID of sessionData[roomID].players.keys() )
   {
-    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID) );
+    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
   }
 };
 
@@ -57,10 +57,13 @@ const swapRoles = (io,sockets,roomID)=>
     );
     sessionData[roomID].players = updatedPlayers;
   }
-  // FIXME: send out events (success/failure)
+  for( playerID of sessionData[roomID].players.keys() )
+  {
+    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
+  }
 }
 
-const restartGame = (io, socket, roomID, position)=>
+const restartGame = (io, socket, roomID, position) =>
 {
   if(roomID in sessionData)
   {
@@ -68,7 +71,10 @@ const restartGame = (io, socket, roomID, position)=>
     sessionData[roomID].activePlayer = Othello.labels.black;
     sessionData[roomID].started = false;
   }
-  // FIXME: send out events (success/failure)
+  for( playerID of sessionData[roomID].players.keys() )
+  {
+    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
+  }
 };
 
 const dataForPlayer = (data, playerID)=>
@@ -151,17 +157,12 @@ const configureServer = (io)=>{
       socket.on("disconnect",()=>{
         onDisconnect(io, socket, roomID);
       });
-      /*
-      socket.on('othello.reset', (){
-        // create new game
-      });
-      socket.on('othello.move', ()=>{
-
-      })
       socket.on('othello.swap', ()=>{
-
+        swapRoles(io, socket, roomID);
       });
-      */
+      socket.on('othello.reset', ()=>{
+        restartGame(io, socket, roomID, position);
+      });
     });
   });
 };
