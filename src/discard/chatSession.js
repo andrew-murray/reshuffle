@@ -97,8 +97,9 @@ function configureServer(io) // expects a socket.io server
       socket.join(vacantRoom);
       joinChatRoom(io, socket, vacantRoom);
     });
+
     socket.on('chat.join', (roomID)=>{
-      if(!(roomID in socket.rooms))
+      if(!socket.rooms.has(roomID))
       {
         socket.join(roomID);
         joinChatRoom(io,socket,roomID);
