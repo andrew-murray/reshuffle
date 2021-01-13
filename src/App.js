@@ -15,8 +15,13 @@ import OthelloBoard from "./games/OthelloBoard"
 import OthelloRules from "./games/OthelloRules"
 import {OfflineOthelloGame} from "./games/OthelloGame"
 
+// for action group
+import Button from '@material-ui/core/Button';
+
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:8080/";
+
+
 
 class OthelloWithChat extends React.Component
 {
@@ -93,8 +98,29 @@ class OthelloWithChat extends React.Component
   render()
   {
     const showMovesForPlayer = this.state.role === this.state.activePlayer ? this.state.role: null;
+
+    const sendSwap = () =>
+    {
+      if(this.state.role!== null && this.socket)
+      {
+        this.socket.emit("othello.swap");
+      }
+    };
+
+    const sendReset = () =>
+    {
+      if(this.state.role!== null && this.socket)
+      {
+        this.socket.emit("othello.reset");
+      }
+    };
+
     return (
       <React.Fragment>
+        <div style={{padding: "1vh"}}>
+          <Button variant="outlined" onClick={sendSwap}> Swap </Button>
+          <Button variant="outlined" onClick={sendReset}> Reset </Button>
+        </div>
         <OthelloBoard
           width={400}
           height={400}

@@ -47,14 +47,16 @@ const onConnect = (io, socket, roomID) =>
   }
 };
 
-const swapRoles = (io,sockets,roomID)=>
+const swapRoles = (io,socket,roomID)=>
 {
   if(roomID in sessionData && sessionData[roomID].started === false)
   {
-    // null, represents observers
-    const updatedPlayers = new Map (
-      Array.from(sessionData[roomID].players).map((id, role)=>(id, role ? OthelloRules.opponentForPlayer(role) : null))
-    );
+    const playerArray = Array.from(sessionData[roomID].players);
+    const updatedPlayerArray = playerArray.map(idAndRole =>[
+      idAndRole[0],
+      idAndRole[1] !== null ?  OthelloRules.opponentForPlayer(idAndRole[1]) : null
+    ]);
+    const updatedPlayers = new Map( updatedPlayerArray );
     sessionData[roomID].players = updatedPlayers;
   }
   for( playerID of sessionData[roomID].players.keys() )
@@ -63,12 +65,12 @@ const swapRoles = (io,sockets,roomID)=>
   }
 }
 
-const restartGame = (io, socket, roomID, position) =>
+const restartGame = (io, socket, roomID) =>
 {
   if(roomID in sessionData)
   {
     sessionData[roomID].board = OthelloRules.createInitialBoardState();
-    sessionData[roomID].activePlayer = Othello.labels.black;
+    sessionData[roomID].activePlayer = OthelloRules.labels.black;
     sessionData[roomID].started = false;
   }
   for( playerID of sessionData[roomID].players.keys() )
@@ -151,18 +153,22 @@ const configureServer = (io)=>{
       // todo: just want to get to the point where we can receive
       // the initial population of the board first
       onConnect(io, socket, roomID);
-      socket.on("othello.move",(move)=>{
-        onMakeMove(io, socket, roomID, move.position);
-      });
       socket.on("disconnect",()=>{
         onDisconnect(io, socket, roomID);
       });
-      socket.on('othello.swap', ()=>{
-        swapRoles(io, socket, roomID);
-      });
-      socket.on('othello.reset', ()=>{
-        restartGame(io, socket, roomID, position);
-      });
+      // wire up game actions, if necessary
+      if(sessionData[roomID].players.get(socket.id)!==null)
+      {
+        socket.on("othello.move",(move)=>{
+          onMakeMove(io, socket, roomID, move.position);
+        });
+        socket.on('othello.swap', ()=>{
+          swapRoles(io, socket, roomID);
+        });
+        socket.on('othello.reset', ()=>{
+          restartGame(io, socket, roomID);
+        });
+      }
     });
   });
 };
