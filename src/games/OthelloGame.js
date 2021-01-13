@@ -16,14 +16,14 @@ class OfflineOthelloGame extends Component
         width={400}
         height={400}
         game={this.state.game}
-        player={this.state.player}
+        showMovesForPlayer={this.state.player}
         onMove={(action)=>{
           if(action.position)
           {
             const updatedBoardState = OthelloRules.createBoardStateWithMove(
               this.state.game,
               action.position,
-              action.role
+              this.state.player
             );
             const opponent = OthelloRules.opponentForPlayer(this.state.player);
             const opponentCanPlay = OthelloRules.playerCanPlay(

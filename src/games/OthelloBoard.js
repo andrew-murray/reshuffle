@@ -28,7 +28,6 @@ class OthelloCell extends React.Component{
   }
 
   render(){
-
     const onMouseOver = () => {
       this.setState({hovered: true});
     };
@@ -97,10 +96,14 @@ class OthelloCell extends React.Component{
 
 class OthelloBoard extends Component {
   render() {
-    const availableMoves = OthelloRules.changesForAllPositions(
-      this.props.game,
-      this.props.player
-    );
+    let availableMoves = [];
+    if(this.props.showMovesForPlayer)
+    {
+      availableMoves = OthelloRules.changesForAllPositions(
+        this.props.game,
+        this.props.showMovesForPlayer
+      );
+    }
 
     const width = this.props.width;
     const height = this.props.height;
@@ -120,7 +123,7 @@ class OthelloBoard extends Component {
     {
       if(this.props.onMove && possible)
       {
-        this.props.onMove( {position: [y,x], role: this.props.player} );
+        this.props.onMove( {position: [y,x]} );
       }
     };
 
@@ -137,7 +140,7 @@ class OthelloBoard extends Component {
           width={cellWidth}
           height={cellHeight}
           boardPosition={[y,x]}
-          player={this.props.player}
+          player={this.props.showMovesForPlayer}
           x={xStart}
           y={yStart}
           gameState={cellState}

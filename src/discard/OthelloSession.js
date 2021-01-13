@@ -19,7 +19,7 @@ const onConnect = (io, socket, roomID) =>
   {
     sessionData[roomID] = {
       board: OthelloRules.createInitialBoardState(),
-      activePlayer: OthelloRules.labels.black,
+      activePlayer: null,
       players: new Map( [[socket.id, OthelloRules.labels.black]] ),
       started: false
     };
@@ -29,6 +29,8 @@ const onConnect = (io, socket, roomID) =>
     console.log("creating player based on opponent");
     const existingRole = Array.from(sessionData[roomID].players.values())[0];
     sessionData[roomID].players.set(socket.id,OthelloRules.opponentForPlayer(existingRole));
+    // second player has joined, we can start
+    sessionData[roomID].activePlayer = OthelloRules.labels.black;
   }
   else
   {
@@ -71,9 +73,6 @@ const restartGame = (io, socket, roomID, position)=>
 
 const dataForPlayer = (data, playerID)=>
 {
-  console.log(playerID);
-  console.log(data.players);
-  console.log(data.players.get(playerID));
   return {
     board: data.board,
     activePlayer: data.activePlayer,
@@ -85,8 +84,8 @@ const dataForPlayer = (data, playerID)=>
 const onMakeMove = (io, socket, roomID, position)=>
 {
   if(roomID in sessionData
-    && socket.id in sessionData[roomID].players
-    && sessionData[roomID].players[socket.id] === sessionData[roomID].activePlayer
+    && sessionData[roomID].players.has(socket.id)
+    && sessionData[roomID].players.get(socket.id) === sessionData[roomID].activePlayer
   )
   {
     // we can make a move, now we need to validate it
@@ -97,7 +96,7 @@ const onMakeMove = (io, socket, roomID, position)=>
     );
     if(validMove)
     {
-      const updatedBoard = createBoardStateWithMove(
+      const updatedBoard = OthelloRules.createBoardStateWithMove(
         sessionData[roomID].board,
         position,
         sessionData[roomID].activePlayer
@@ -146,6 +145,9 @@ const configureServer = (io)=>{
       // todo: just want to get to the point where we can receive
       // the initial population of the board first
       onConnect(io, socket, roomID);
+      socket.on("othello.move",(move)=>{
+        onMakeMove(io, socket, roomID, move.position);
+      });
       socket.on("disconnect",()=>{
         onDisconnect(io, socket, roomID);
       });

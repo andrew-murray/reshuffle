@@ -45,7 +45,6 @@ class OthelloWithChat extends React.Component
   }
 
   componentDidMount() {
-    console.log("mounting component!");
     this.socket = io(ENDPOINT);
     this.connectToRoom(this.props.roomID);
     this.socket.on('chat.message', (msg)=>{
@@ -54,9 +53,6 @@ class OthelloWithChat extends React.Component
       });
     });
     this.socket.on('othello.update', (othelloState)=>{
-      console.log("receiving othello.update");
-      console.log(othelloState);
-      window.state=othelloState;
       this.setState((state,props)=>{
         if(
           !state.board
@@ -96,6 +92,7 @@ class OthelloWithChat extends React.Component
 
   render()
   {
+    const showMovesForPlayer = this.state.role === this.state.activePlayer ? this.state.role: null;
     return (
       <React.Fragment>
         <OthelloBoard
@@ -103,11 +100,11 @@ class OthelloWithChat extends React.Component
           height={400}
           game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
           // provide a player, OthelloBoard requires one for now
-          player={this.state.role ? this.state.role: OthelloRules.labels.black}
+          showMovesForPlayer={showMovesForPlayer}
           onMove={(action)=>{
-            console.log(action);
-            if(action.position)
+            if(action.position && this.socket && this.socket.connected)
             {
+              this.socket.emit("othello.move", action);
             }
           }}
         />
