@@ -8,51 +8,21 @@ import Drawer from '@material-ui/core/Drawer';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 
-import io from "socket.io-client";
-const ENDPOINT = "http://localhost:8080/";
-
 class ChatDrawer extends React.Component
 {
     constructor(props)
     {
       super(props);
       this.state = {
-        currentMessage: "",
-        messages: [],
-        joinedRoom: ""
+        currentMessage: ""
       }
-      this.socket = null;
-    }
-
-    attachToRoom(roomID)
-    {
-      if(this.state.joinedRoom !== roomID)
-      {
-        console.log("joining newRoom " + roomID)
-        const attachToNewRoom = ()=>{
-          this.socket.emit('chat.join', roomID);
-        };
-        this.setState({messages: [], joinedRoom: roomID}, attachToNewRoom);
-      }
-    }
-
-    componentDidMount() {
-      this.socket = io(ENDPOINT);
-      this.socket.on('chat.message', (msg)=>{
-        this.setState({messages: this.state.messages.concat(msg)});
-      });
-      this.attachToRoom(this.props.match.params.roomID)
-    }
-
-    componentDidUpdate() {
-      this.attachToRoom(this.props.match.params.roomID)
     }
 
     render()
     {
-      const messageItems = [...Array(this.state.messages.length).keys()].map(messageIndex=>
+      const messageItems = [...Array(this.props.messages.length).keys()].map(messageIndex=>
         <ListItem key={"message-" + messageIndex.toString()}>
-          <ListItemText primary={this.state.messages[messageIndex]}>
+          <ListItemText primary={this.props.messages[messageIndex]}>
           </ListItemText>
         </ListItem>
       );
@@ -64,9 +34,12 @@ class ChatDrawer extends React.Component
 
       const onChatSend = (event)=>
       {
-        if(this.state.currentMessage && this.socket){
-          this.socket.emit("chat.message", this.state.currentMessage);
-          this.setState({currentMessage:""})
+        if(this.state.currentMessage && this.props.onSend){
+          const currentMessage = this.state.currentMessage;
+          this.setState(
+            {currentMessage:""},
+            ()=>{this.props.onSend(currentMessage);}
+          );
         }
         event.preventDefault();
       };
