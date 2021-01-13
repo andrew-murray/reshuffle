@@ -13,6 +13,7 @@ const othelloSession = require("./OthelloSession")
 const port = process.env.PORT || 8080;
 
 chatSession.configureServer(io);
+othelloSession.configureServer(io);
 
 let server = http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);

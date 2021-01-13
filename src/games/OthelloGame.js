@@ -43,31 +43,4 @@ class OfflineOthelloGame extends Component
 }
 
 
-class OnlineOthelloGame extends Component
-{
-  state = {
-    game: OthelloRules.createInitialBoardState(),
-    player: OthelloRules.labels.black
-  }
-
-  render()
-  {
-    return (
-      <OthelloBoard
-        width={400}
-        height={400}
-        game={this.state.game}
-        player={this.state.player}
-        onMove={(action)=>{
-          if(action.position)
-          {
-            // do nothing
-          }
-        }}
-      />
-    );
-  }
-}
-
-
-export {OfflineOthelloGame, OnlineOthelloGame};
+export {OfflineOthelloGame};
