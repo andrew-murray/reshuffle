@@ -16,9 +16,6 @@ import {OfflineOthelloGame, OnlineOthelloGame} from "./games/OthelloGame"
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:8080/";
 
-const theme = createMuiTheme({
-});
-
 class OthelloWithChat extends React.Component
 {
   state = {
@@ -84,7 +81,7 @@ function App() {
       }),
     [prefersDarkMode],
   );
-  
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
