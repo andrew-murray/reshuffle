@@ -175,6 +175,34 @@ const createBoardStateWithMove = (game, position, role) => {
   return boardClone;
 }
 
+const createEmptyBoardState = (height, width) => {
+  const e = labels.empty;
+  return [...Array(height).keys()].map((rowIndex)=>{
+    // empty rows
+    return Array(width).fill(e);
+  });
+}
+
+const boardsEqual = (a,b)=>
+{
+  // todo: validate boards are square
+  if(a.length !== b.length || a[0].length !== b[0].length)
+  {
+    return false;
+  }
+  for(const y of [...Array(a.length).keys()])
+  {
+    for(const x of [...Array(b[0].length).keys()])
+    {
+      if(a[y][x] !== b[y][x])
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 const createInitialBoardState = () => {
   const e = labels.empty;
   const w = labels.white;
@@ -212,10 +240,12 @@ const changesForAllPositions = (game, role) => {
 }
 
 const moduleExports = {
+  boardsEqual: boardsEqual,
   canPlay: canPlay,
   changesForAllPositions: changesForAllPositions,
   comparePosition: comparePosition,
   createBoardStateWithMove: createBoardStateWithMove,
+  createEmptyBoardState: createEmptyBoardState,
   createInitialBoardState: createInitialBoardState,
   changesFromPlay: changesFromPlay,
   isGameCoordinate: isGameCoordinate,
