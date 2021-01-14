@@ -8,20 +8,17 @@ import {
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Button from '@material-ui/core/Button';
 
 import TitleScreen from "./TitleScreen";
 import ChatDrawer from "./ChatDrawer";
 import OthelloBoard from "./games/OthelloBoard"
 import OthelloRules from "./games/OthelloRules"
 import {OfflineOthelloGame} from "./games/OthelloGame"
-
-// for action group
-import Button from '@material-ui/core/Button';
+import OthelloStatusBar from "./games/OthelloStatusBar"
 
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:8080/";
-
-
 
 class OthelloWithChat extends React.Component
 {
@@ -29,7 +26,8 @@ class OthelloWithChat extends React.Component
     messages: [],
     board: null,
     role: null,
-    activePlayer: null
+    activePlayer: null,
+    status: null
   }
 
   constructor(props)
@@ -63,14 +61,17 @@ class OthelloWithChat extends React.Component
           !state.board
           || !state.activePlayer
           || !state.player
+          || !state.status
           || !OthelloRules.boardsEqual(state.board, othelloState.board)
           || othelloState.role !== state.role
-          || othelloState.activePlayer !== state.activePlayer )
+          || othelloState.activePlayer !== state.activePlayer
+          || othelloState.status !== state.status)
         {
           return {
             board: othelloState.board,
             activePlayer: othelloState.activePlayer,
-            role: othelloState.role
+            role: othelloState.role,
+            status: othelloState.status
           };
         }
         else
@@ -115,12 +116,18 @@ class OthelloWithChat extends React.Component
       }
     };
 
+    const sendConcede = () =>
+    {
+      if(this.state.role!==null && this.socket)
+      {
+        this.socket.emit("othello.concede");
+      }
+    }
+
+    const gameIsActive = this.state.status === "active";
+    console.log(this.state.status)
     return (
       <React.Fragment>
-        <div style={{padding: "1vh"}}>
-          <Button variant="outlined" onClick={sendSwap}> Swap </Button>
-          <Button variant="outlined" onClick={sendReset}> Reset </Button>
-        </div>
         <OthelloBoard
           width={400}
           height={400}
@@ -134,6 +141,12 @@ class OthelloWithChat extends React.Component
             }
           }}
         />
+        <div style={{padding: "1vh"}}>
+          <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive}> Swap </Button>
+          <Button variant="outlined" onClick={sendReset} disabled={gameIsActive}> Reset </Button>
+          <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive}> Concede </Button>
+        </div>
+        <OthelloStatusBar />
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{if(this.socket){this.socket.emit("chat.message", msg);}}}

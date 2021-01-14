@@ -21,7 +21,7 @@ const onConnect = (io, socket, roomID) =>
       board: OthelloRules.createInitialBoardState(),
       activePlayer: null,
       players: new Map( [[socket.id, OthelloRules.labels.black]] ),
-      started: false
+      status: "new"
     };
   }
   else if(sessionData[roomID].players.size === 1)
@@ -49,7 +49,7 @@ const onConnect = (io, socket, roomID) =>
 
 const swapRoles = (io,socket,roomID)=>
 {
-  if(roomID in sessionData && sessionData[roomID].started === false)
+  if(roomID in sessionData && sessionData[roomID].status !== "active")
   {
     const playerArray = Array.from(sessionData[roomID].players);
     const updatedPlayerArray = playerArray.map(idAndRole =>[
@@ -67,11 +67,33 @@ const swapRoles = (io,socket,roomID)=>
 
 const restartGame = (io, socket, roomID) =>
 {
-  if(roomID in sessionData)
+  if(roomID in sessionData && sessionData[roomID].status !== "active")
   {
     sessionData[roomID].board = OthelloRules.createInitialBoardState();
     sessionData[roomID].activePlayer = OthelloRules.labels.black;
-    sessionData[roomID].started = false;
+    // status is an object, when conceded (see below)
+    sessionData[roomID].status = "new";
+  }
+  for( playerID of sessionData[roomID].players.keys() )
+  {
+    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
+  }
+};
+
+const concedeGame = (io, socket, roomID) =>
+{
+  if(roomID in sessionData
+    && sessionData[roomID].players.has(socket.id))
+  {
+    const playerRole = sessionData[roomID].players.get(socket.id);
+    if( playerRole !== null )
+    {
+      sessionData[roomID].activePlayer = null;
+      sessionData[roomID].status = {
+        winner : OthelloRules.opponentForPlayer(playerRole),
+        conceded: true
+      };
+    }
   }
   for( playerID of sessionData[roomID].players.keys() )
   {
@@ -84,7 +106,7 @@ const dataForPlayer = (data, playerID)=>
   return {
     board: data.board,
     activePlayer: data.activePlayer,
-    started: data.started,
+    status: data.status,
     role: data.players.get(playerID)
   };
 }
@@ -94,6 +116,7 @@ const onMakeMove = (io, socket, roomID, position)=>
   if(roomID in sessionData
     && sessionData[roomID].players.has(socket.id)
     && sessionData[roomID].players.get(socket.id) === sessionData[roomID].activePlayer
+    && (sessionData[roomID].status === "new" || sessionData[roomID].status === "active")
   )
   {
     // we can make a move, now we need to validate it
@@ -112,17 +135,18 @@ const onMakeMove = (io, socket, roomID, position)=>
       const opponent = OthelloRules.opponentForPlayer(sessionData[roomID].activePlayer);
       if(OthelloRules.playerCanPlay(updatedBoard, opponent))
       {
+        // don't update the player, when they have no available moves
+        // (they have to pass)
         sessionData[roomID].activePlayer = opponent;
-        sessionData[roomID].board = updatedBoard;
-        sessionData[roomID].started = true;
       }
-      else
-      {
-        // don't update the player,
-        // because the player has to pass (or the game is over)
-        sessionData[roomID].board = updatedBoard;
-        sessionData[roomID].started = true;
-      }
+      sessionData[roomID].board = updatedBoard;
+
+      const gameOver = 64 === OthelloRules.countCellsForRole(
+        updatedBoard,
+        OthelloRules.labels.empty
+      );
+
+      sessionData[roomID].status = gameOver ? "complete" : "active";
     }
 
     for( playerID of sessionData[roomID].players.keys() )
@@ -167,6 +191,9 @@ const configureServer = (io)=>{
         });
         socket.on('othello.reset', ()=>{
           restartGame(io, socket, roomID);
+        });
+        socket.on('othello.concede', ()=>{
+          concedeGame(io, socket, roomID);
         });
       }
     });

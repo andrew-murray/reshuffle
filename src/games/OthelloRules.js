@@ -203,6 +203,22 @@ const boardsEqual = (a,b)=>
   return false;
 }
 
+const countCellsForRole = (board, role)=>
+{
+  let total = 0;
+  for(const y of [...Array(board.length).keys()])
+  {
+    for(const x of [...Array(board[0].length).keys()])
+    {
+      if(board[y][x] === role)
+      {
+        total++;
+      }
+    }
+  }
+  return total;
+}
+
 const createInitialBoardState = () => {
   const e = labels.empty;
   const w = labels.white;
@@ -244,6 +260,7 @@ const moduleExports = {
   canPlay: canPlay,
   changesForAllPositions: changesForAllPositions,
   comparePosition: comparePosition,
+  countCellsForRole: countCellsForRole,
   createBoardStateWithMove: createBoardStateWithMove,
   createEmptyBoardState: createEmptyBoardState,
   createInitialBoardState: createInitialBoardState,
