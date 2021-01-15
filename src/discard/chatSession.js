@@ -70,11 +70,14 @@ function joinChatRoom(io, socket, roomID)
 function configureServer(io) // expects a socket.io server
 {
   io.on('connection', function(socket) {
-
     socket.on('chat.create', (optionalID) => {
       debug("socket " + socket.id + " requeste to create " + optionalID ? optionalID : "");
       if(optionalID)
       {
+        if(socket.rooms.has(optionalID))
+        {
+          return;
+        }
         if(io.sockets.adapter.rooms.get(optionalID))
         {
           const msg = "Attempted to create a room that already exists";

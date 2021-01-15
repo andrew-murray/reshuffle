@@ -43,11 +43,7 @@ const onConnect = (io, socket, roomID) =>
   }
   debugState(sessionData[roomID]);
   // regardless of the above - send the player the appropriate update
-  let observerCount = 0;
-  for( let playerKind of sessionData[roomID].players.values() )
-  {
-      observerCount += playerKind === null;
-  }
+  const observerCount = countObservers(sessionData[roomID].players);
   const playerCount = sessionData[roomID].players.size - observerCount;
   const playerString = playerCount.toString() + " player" + (playerCount !== 1 ? "s" : "");
   const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
@@ -81,6 +77,16 @@ const swapRoles = (io,socket,roomID)=>
   }
 }
 
+const countObservers = (players) =>
+{
+  let observerCount = 0;
+  for( let playerKind of players.values() )
+  {
+      observerCount += playerKind === null;
+  }
+  return observerCount;
+};
+
 const restartGame = (io, socket, roomID) =>
 {
   debugEvent("received restart for socket " + socket.id + " for room " + roomID);
@@ -88,7 +94,8 @@ const restartGame = (io, socket, roomID) =>
   if(roomID in sessionData && sessionData[roomID].status !== "active")
   {
     sessionData[roomID].board = OthelloRules.createInitialBoardState();
-    sessionData[roomID].activePlayer = OthelloRules.labels.black;
+    const playerCount = sessionData[roomID].players.size - countObservers(sessionData[roomID].players);
+    sessionData[roomID].activePlayer = playerCount == 2 ? OthelloRules.labels.black : null;
     // status is an object, when conceded (see below)
     sessionData[roomID].status = "new";
   }
@@ -206,13 +213,11 @@ const configureServer = (io)=>{
       debugEvent("received othello.join for " + roomID);
       // todo: just want to get to the point where we can receive
       // the initial population of the board first
-      onConnect(io, socket, roomID);
-      socket.on("disconnect",()=>{
-        onDisconnect(io, socket, roomID);
-      });
       // wire up game actions, if necessary
-      if(sessionData[roomID].players.get(socket.id) !== null)
+      const needsWiring = !(roomID in sessionData) || !sessionData[roomID].players.has(socket.id);
+      if(needsWiring)
       {
+        onConnect(io, socket, roomID);
         socket.on("othello.move",(move)=>{
           onMakeMove(io, socket, roomID, move.position);
         });
@@ -224,6 +229,9 @@ const configureServer = (io)=>{
         });
         socket.on('othello.concede', ()=>{
           concedeGame(io, socket, roomID);
+        });
+        socket.on("disconnect",()=>{
+          onDisconnect(io, socket, roomID);
         });
       }
     });
