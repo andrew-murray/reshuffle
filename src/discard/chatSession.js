@@ -96,6 +96,8 @@ function configureServer(io) // expects a socket.io server
       }
       socket.join(vacantRoom);
       joinChatRoom(io, socket, vacantRoom);
+      console.log(vacantRoom);
+      socket.emit("room.created", vacantRoom);
     });
 
     socket.on('chat.join', (roomID)=>{

@@ -1,9 +1,12 @@
-const crypto = require('crypto');
+const humanID = require("human-id");
 
-const randomID = () =>
-{
-  return crypto.randomBytes(20).toString('hex');
+let randomID = ()=>{
+  return humanID.humanId({
+    separator: "-",
+    capitalize: false
+  });
 };
+
 
 const findVacantRoom = (io)=>
 {
