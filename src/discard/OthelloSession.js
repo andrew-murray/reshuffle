@@ -24,7 +24,7 @@ const onConnect = (io, socket, roomID) =>
       status: "new"
     };
   }
-  else if(sessionData[roomID].players.size === 1)
+  else if(sessionData[roomID].players.size === 1 && sessionData[roomID])
   {
     console.log("creating player based on opponent");
     const existingRole = Array.from(sessionData[roomID].players.values())[0];

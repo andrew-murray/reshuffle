@@ -9,6 +9,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 
 import TitleScreen from "./TitleScreen";
 import ChatDrawer from "./ChatDrawer";
@@ -130,7 +132,7 @@ class OthelloWithChat extends React.Component
       OthelloRules.countCellsForRole(this.state.board, OthelloRules.labels.black);
 
     const gameIsActive = this.state.status === "active";
-    console.log(this.state.status)
+
     return (
       <React.Fragment>
         <OthelloBoard
@@ -146,16 +148,19 @@ class OthelloWithChat extends React.Component
             }
           }}
         />
-        <div style={{padding: "1vh"}}>
-          <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive}> Swap </Button>
-          <Button variant="outlined" onClick={sendReset} disabled={gameIsActive}> Reset </Button>
-          <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive}> Concede </Button>
-        </div>
         <OthelloStatusBar
           role={this.state.role}
           whiteScore={whiteScore}
           blackScore={blackScore}
         />
+        {this.state.role ?
+          <div style={{padding: "1vh"}}>
+            <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive}> Swap </Button>
+            <Button variant="outlined" onClick={sendReset} disabled={gameIsActive}> Reset </Button>
+            <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive}> Concede </Button>
+          </div>
+          : <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
+        }
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{if(this.socket){this.socket.emit("chat.message", msg);}}}
