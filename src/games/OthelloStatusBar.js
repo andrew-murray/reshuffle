@@ -1,9 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import OthelloRules from "./OthelloRules"
-import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
 import CircleIcon from '@material-ui/icons/FiberManualRecord';
 
 const useStyles = makeStyles((theme) => ({

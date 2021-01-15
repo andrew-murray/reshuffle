@@ -1,25 +1,6 @@
 import React, { Component } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
 import OthelloRules from "./OthelloRules";
-import PropTypes from 'prop-types'
-
-/*
-Counter.defaultProps = {
-  hoverOpacity: 0.5
-};
-
-Counter.propTypes = {
-
-  // color to be displayed by default
-  color: PropTypes.string.isRequired,
-
-  // color to be displayed on hover
-  hoverColor:  PropTypes.string,
-
-  // opacity to be applied when hovered
-  hoverOpacity: PropTypes.number
-};
-*/
 
 class OthelloCell extends React.Component{
 
