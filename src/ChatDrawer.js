@@ -44,18 +44,27 @@ class ChatDrawer extends React.Component
         event.preventDefault();
       };
 
+      const localStyle = {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-end"
+      };
+      const drawerStyle = Object.assign( Object.assign({}, localStyle), this.props.style );
+
       // another option for this list, is react-window?
+      console.log(this.props.className);
       return (
           <Drawer
             variant="permanent"
             anchor="right"
-            style={{display: "flex", flexDirection: "row", alignItems: "flex-end"}}
+            style={drawerStyle}
+            className={this.props.className}
           >
             <Paper
               // column-reverse means the browser will scroll to the bottom!
               // todo: this may not be a long-term solution because all the
               // chat is bottom aligned when the chat doesn't fill the page
-              style={{overflow: "auto", flexGrow: 1, display: "flex", flexDirection: "column-reverse"}}
+              style={{overflow: "auto", flexGrow: 1, display: "flex", flexDirection: "column-reverse", width: drawerStyle.width ? drawerStyle.width : "inherit"}}
               >
               <List aria-label="menu" >
                 {messageItems}

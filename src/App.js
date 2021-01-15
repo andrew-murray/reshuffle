@@ -11,6 +11,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/core/styles';
 
 import TitleScreen from "./TitleScreen";
 import ChatDrawer from "./ChatDrawer";
@@ -21,6 +22,19 @@ import OthelloStatusBar from "./games/OthelloStatusBar"
 
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:8080/";
+
+const othelloStyles = (theme) => { return {
+  root: {
+    display: "flex"
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  chatDrawer: {
+    width: 300
+  }
+} };
 
 class OthelloWithChat extends React.Component
 {
@@ -134,42 +148,47 @@ class OthelloWithChat extends React.Component
     const styleForGame = this.state.activePlayer === null ? {opacity: "50%"} : undefined;
 
     return (
-      <React.Fragment>
-        <OthelloBoard
-          width={400}
-          height={400}
-          game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
-          // provide a player, OthelloBoard requires one for now
-          showMovesForPlayer={canMakeMoves}
-          onMove={(action)=>{
-            if(action.position && this.socket && this.socket.connected)
-            {
-              this.socket.emit("othello.move", action);
-            }
-          }}
-          style={styleForGame}
-        />
-        <OthelloStatusBar
-          role={this.state.role}
-          whiteScore={whiteScore}
-          blackScore={blackScore}
-        />
-        {this.state.role ?
-          <div style={{padding: "1vh"}}>
-            <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive} color="primary"> Swap </Button>
-            <Button variant="outlined" onClick={sendReset} disabled={gameIsActive} color="primary"> Reset </Button>
-            <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive} color="primary"> Concede </Button>
-          </div>
-          : <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
-        }
+      <div className={this.props.classes.root}>
+        <main className={this.props.classes.content}>
+          <OthelloBoard
+            width={400}
+            height={400}
+            game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
+            // provide a player, OthelloBoard requires one for now
+            showMovesForPlayer={canMakeMoves}
+            onMove={(action)=>{
+              if(action.position && this.socket && this.socket.connected)
+              {
+                this.socket.emit("othello.move", action);
+              }
+            }}
+            style={styleForGame}
+          />
+          <OthelloStatusBar
+            role={this.state.role}
+            whiteScore={whiteScore}
+            blackScore={blackScore}
+          />
+          {this.state.role ?
+            <div style={{padding: "1vh"}}>
+              <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive} color="primary"> Swap </Button>
+              <Button variant="outlined" onClick={sendReset} disabled={gameIsActive} color="primary"> Reset </Button>
+              <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive} color="primary"> Concede </Button>
+            </div>
+            : <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
+          }
+        </main>
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{if(this.socket){this.socket.emit("chat.message", msg);}}}
+          style={{width: "300px"}}
         />
-      </React.Fragment>
+      </div>
     );
   }
 }
+
+const StyledOthelloWithChat = withStyles(othelloStyles)(OthelloWithChat);
 
 
 function App() {
@@ -200,7 +219,7 @@ function App() {
               </Route>
               <Route
                 path="/room/:roomID/"
-                component={(props)=> <OthelloWithChat roomID={props.match.params.roomID} />}
+                component={(props)=> <StyledOthelloWithChat roomID={props.match.params.roomID} />}
               />
             </Switch>
           </div>
