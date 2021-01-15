@@ -171,9 +171,9 @@ class OthelloWithChat extends React.Component
           />
           {this.state.role ?
             <div style={{padding: "1vh"}}>
-              <Button variant="outlined" onClick={sendSwap} disabled={gameIsActive} color="primary"> Swap </Button>
-              <Button variant="outlined" onClick={sendReset} disabled={gameIsActive} color="primary"> Reset </Button>
-              <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive} color="primary"> Concede </Button>
+              <Button variant="contained" onClick={sendSwap} disabled={gameIsActive} color="primary"> Swap </Button>
+              <Button variant="contained" onClick={sendReset} disabled={gameIsActive} color="primary"> Reset </Button>
+              <Button variant="contained" onClick={sendConcede} disabled={!gameIsActive} color="primary"> Concede </Button>
             </div>
             : <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
           }
