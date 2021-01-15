@@ -100,8 +100,6 @@ class OthelloWithChat extends React.Component
 
   render()
   {
-    const showMovesForPlayer = this.state.role === this.state.activePlayer ? this.state.role: null;
-
     const sendSwap = () =>
     {
       if(this.state.role!== null && this.socket)
@@ -132,6 +130,8 @@ class OthelloWithChat extends React.Component
       OthelloRules.countCellsForRole(this.state.board, OthelloRules.labels.black);
 
     const gameIsActive = this.state.status === "active";
+    const canMakeMoves = this.state.role === this.state.activePlayer ? this.state.role: null;
+    const styleForGame = this.state.activePlayer === null ? {opacity: "50%"} : undefined;
 
     return (
       <React.Fragment>
@@ -140,13 +140,14 @@ class OthelloWithChat extends React.Component
           height={400}
           game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
           // provide a player, OthelloBoard requires one for now
-          showMovesForPlayer={showMovesForPlayer}
+          showMovesForPlayer={canMakeMoves}
           onMove={(action)=>{
             if(action.position && this.socket && this.socket.connected)
             {
               this.socket.emit("othello.move", action);
             }
           }}
+          style={styleForGame}
         />
         <OthelloStatusBar
           role={this.state.role}

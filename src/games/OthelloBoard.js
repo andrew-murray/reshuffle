@@ -157,7 +157,7 @@ class OthelloBoard extends Component {
     // Layer is actual canvas element (so you may have several canvases in the stage)
     // And then we have canvas shapes inside the Layer
     return (
-      <Stage width={width} height={height}>
+      <Stage width={width} height={height} style={this.props.style}>
         <Layer>
           {
             rowArray.map( y => { return colArray.map( x => makeCell(y,x,this.props.game[y][x]))})
