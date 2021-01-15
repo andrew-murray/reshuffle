@@ -1,4 +1,7 @@
 const OthelloRules = require("../games/OthelloRules");
+const debug = require("debug");
+const debugEvent = debug("othello");
+const debugState = debug("othello.state");
 
 let sessionData = {};
 
@@ -9,14 +12,14 @@ const initialiseStorage = (storage) =>
 
 const onConnect = (io, socket, roomID) =>
 {
-  console.log("connect fired for socket " + socket.id + " for room " + roomID);
-  console.log(sessionData);
+  debugEvent("received connect for socket " + socket.id + " for room " + roomID);
   if(roomID in sessionData && sessionData[roomID].players.has(socket.id))
   {
     // do nothing, player is already in the room
   }
   else if(!(roomID in sessionData))
   {
+    debugEvent("created room");
     sessionData[roomID] = {
       board: OthelloRules.createInitialBoardState(),
       activePlayer: null,
@@ -26,7 +29,7 @@ const onConnect = (io, socket, roomID) =>
   }
   else if(sessionData[roomID].players.size === 1 && sessionData[roomID])
   {
-    console.log("creating player based on opponent");
+    debugEvent("adding opponent");
     const existingRole = Array.from(sessionData[roomID].players.values())[0];
     sessionData[roomID].players.set(socket.id,OthelloRules.opponentForPlayer(existingRole));
     // second player has joined, we can start
@@ -34,11 +37,11 @@ const onConnect = (io, socket, roomID) =>
   }
   else
   {
-    console.log("creating observer")
+    debugEvent("adding observer")
     // observer
     sessionData[roomID].players.set(socket.id, null);
   }
-  console.log(sessionData[roomID]);
+  debugState(sessionData[roomID]);
   // regardless of the above - send the player the appropriate update
   let observerCount = 0;
   for( let playerKind of sessionData[roomID].players.values() )
@@ -59,6 +62,9 @@ const onConnect = (io, socket, roomID) =>
 
 const swapRoles = (io,socket,roomID)=>
 {
+  debugEvent("received swap for socket " + socket.id + " for room " + roomID);
+  debugState(sessionData[roomID]);
+
   if(roomID in sessionData && sessionData[roomID].status !== "active")
   {
     const playerArray = Array.from(sessionData[roomID].players);
@@ -77,6 +83,8 @@ const swapRoles = (io,socket,roomID)=>
 
 const restartGame = (io, socket, roomID) =>
 {
+  debugEvent("received restart for socket " + socket.id + " for room " + roomID);
+  debugState(sessionData[roomID]);
   if(roomID in sessionData && sessionData[roomID].status !== "active")
   {
     sessionData[roomID].board = OthelloRules.createInitialBoardState();
@@ -92,6 +100,8 @@ const restartGame = (io, socket, roomID) =>
 
 const concedeGame = (io, socket, roomID) =>
 {
+  debugEvent("received concede for socket " + socket.id + " for room " + roomID);
+  debugState(sessionData[roomID]);
   let msg = null;
   if(roomID in sessionData
     && sessionData[roomID].players.has(socket.id))
@@ -129,6 +139,8 @@ const dataForPlayer = (data, playerID)=>
 
 const onMakeMove = (io, socket, roomID, position)=>
 {
+  debugEvent("received move for socket " + socket.id + " for room " + roomID);
+  debugState(sessionData[roomID]);
   if(roomID in sessionData
     && sessionData[roomID].players.has(socket.id)
     && sessionData[roomID].players.get(socket.id) === sessionData[roomID].activePlayer
@@ -172,16 +184,18 @@ const onMakeMove = (io, socket, roomID, position)=>
   }
 }
 
-const onDisconnect = (io, socket, roomID)=>
+const onDisconnect = (io, socket, roomID) =>
 {
+  debugEvent("received disconnect for socket " + socket.id + " for room " + roomID);
+  debugState(sessionData[roomID]);
   if(!io.sockets.adapter.rooms.get(roomID))
   {
-    console.log("closing room " + roomID + " due to "+ socket.id + " disconnecting ")
+    debugEvent("closing room")
     delete sessionData[roomID];
   }
   else
   {
-    console.log("disconnecting socket " + socket.id + " from room " + roomID)
+    debugEvent("removing player")
     sessionData[roomID].players.delete(socket.id);
   }
 };
@@ -189,7 +203,7 @@ const onDisconnect = (io, socket, roomID)=>
 const configureServer = (io)=>{
   io.on('connection', function(socket) {
     socket.on('othello.join', function(roomID){
-      console.log("received othello.join for " + roomID);
+      debugEvent("received othello.join for " + roomID);
       // todo: just want to get to the point where we can receive
       // the initial population of the board first
       onConnect(io, socket, roomID);
