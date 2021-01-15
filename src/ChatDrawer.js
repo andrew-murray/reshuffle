@@ -70,12 +70,12 @@ class ChatDrawer extends React.Component
                 {messageItems}
               </List>
             </Paper>
-            <div>
-              <form onSubmit={onChatSend}>
-                <Input inputProps={{ 'aria-label': 'enter message' }} value={this.state.currentMessage} onChange={onMessageChange}/>
-                <Button variant="contained" color="primary" onClick={onChatSend}>Send</Button>
-              </form>
-            </div>
+            <form onSubmit={onChatSend}>
+              <div style={{display: "flex"}}>
+                  <Input inputProps={{ 'aria-label': 'enter message' }} value={this.state.currentMessage} onChange={onMessageChange} style={{flexGrow: 1}}/>
+                  <Button variant="contained" color="primary" onClick={onChatSend} style={{alignSelf: "flex-end"}}>Send</Button>
+              </div>
+            </form>
           </Drawer>
       );
     }
