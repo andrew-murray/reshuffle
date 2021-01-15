@@ -40,11 +40,21 @@ const onConnect = (io, socket, roomID) =>
   }
   console.log(sessionData[roomID]);
   // regardless of the above - send the player the appropriate update
-
+  let observerCount = 0;
+  for( let playerKind of sessionData[roomID].players.values() )
+  {
+      observerCount += playerKind === null;
+  }
+  const playerCount = sessionData[roomID].players.size - observerCount;
+  const playerString = playerCount.toString() + " player" + (playerCount !== 1 ? "s" : "");
+  const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
+  const playerMessage = "There " + (playerCount !== 1 ? "are " : "is ")
+    + playerString + " and " + obString + " present.";
   for( playerID of sessionData[roomID].players.keys() )
   {
     io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
   }
+  io.to(roomID).emit("chat.message", playerMessage);
 };
 
 const swapRoles = (io,socket,roomID)=>
@@ -82,6 +92,7 @@ const restartGame = (io, socket, roomID) =>
 
 const concedeGame = (io, socket, roomID) =>
 {
+  let msg = null;
   if(roomID in sessionData
     && sessionData[roomID].players.has(socket.id))
   {
@@ -93,7 +104,12 @@ const concedeGame = (io, socket, roomID) =>
         winner : OthelloRules.opponentForPlayer(playerRole),
         conceded: true
       };
+      msg = ( playerRole === OthelloRules.labels.white ? "White" : "Black" ) + " conceded the game.";
     }
+  }
+  if(msg)
+  {
+    io.to(roomID).emit("chat.message", msg);
   }
   for( playerID of sessionData[roomID].players.keys() )
   {
