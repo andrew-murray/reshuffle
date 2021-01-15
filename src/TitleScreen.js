@@ -14,8 +14,7 @@ function TitleScreen(props) {
   const menuItems = [
     {text: "Create Room",onClick: ()=>{ history.push("/room/default");}},
     {text: "Join Room", onClick: ()=>{setJoinDialogOpen(true);} },
-    {text: "Practice", onClick: ()=>{ history.push("/practice"); }},
-    {text: "Settings"}
+    {text: "Practice", onClick: ()=>{ history.push("/practice"); }}
   ];
 
   const listItems = menuItems.map( (item) =>
