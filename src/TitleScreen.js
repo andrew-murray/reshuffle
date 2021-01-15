@@ -12,9 +12,9 @@ function TitleScreen(props) {
   let [joinDialogOpen, setJoinDialogOpen] = React.useState(false);
 
   const menuItems = [
-    {text: "Create Room",onClick: ()=>{ history.push("/othello/default");}},
+    {text: "Create Room",onClick: ()=>{ history.push("/othello/room/default");}},
     {text: "Join Room", onClick: ()=>{setJoinDialogOpen(true);} },
-    {text: "Practice", onClick: ()=>{ history.push("/practice"); }}
+    {text: "Practice", onClick: ()=>{ history.push("/othello/practice"); }}
   ];
 
   const listItems = menuItems.map( (item) =>
@@ -39,7 +39,7 @@ function TitleScreen(props) {
         onConfirm={(roomName)=>{
           if(roomName)
           {
-            history.push("/othello/" + roomName);
+            history.push("/othello/room/" + roomName);
             setJoinDialogOpen(false);
           }
         }}

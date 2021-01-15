@@ -222,11 +222,11 @@ function App() {
               <Route exact path="/">
                 <TitleScreen />
               </Route>
-              <Route exact path="/practice">
+              <Route exact path="/othello/practice">
                 <OfflineOthelloGame />
               </Route>
               <Route
-                path="/othello/:roomID/"
+                path="/othello/room/:roomID/"
                 component={(props)=> <StyledOthelloWithChat roomID={props.match.params.roomID} />}
               />
             </Switch>
