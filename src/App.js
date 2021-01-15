@@ -166,6 +166,7 @@ class OthelloWithChat extends React.Component
           />
           <OthelloStatusBar
             role={this.state.role}
+            active={this.state.activePlayer}
             whiteScore={whiteScore}
             blackScore={blackScore}
           />
