@@ -81,7 +81,7 @@ function configureServer(io) // expects a socket.io server
         if(io.sockets.adapter.rooms.get(optionalID))
         {
           const msg = "Attempted to create a room that already exists";
-          console.log(msg);
+          console.error(msg);
           // todo: this may/may not be the correct socket.io idiom
           socket.emit('error', msg);
         }
@@ -96,14 +96,14 @@ function configureServer(io) // expects a socket.io server
       if(!vacantRoom)
       {
         const msg = "Failed to create a chat room, please try again.";
-        console.log(msg);
+        console.error(msg);
         // todo: this may/may not be the correct socket.io idiom
         socket.emit('error', msg);
         return;
       }
       socket.join(vacantRoom);
       joinChatRoom(io, socket, vacantRoom);
-      console.log("created " + vacantRoom);
+      debug("created " + vacantRoom);
       socket.emit("room.created", vacantRoom);
     });
 

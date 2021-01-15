@@ -24,8 +24,8 @@ function OthelloStatusBar(props) {
   const blackFirst = props.role === OthelloRules.labels.black;
   const blackActive = OthelloRules.labels.black === props.active;
   const whiteActive = OthelloRules.labels.white === props.active;
-  const firstActive = (blackFirst && blackActive || !blackFirst && whiteActive);
-  const secondActive = (!blackFirst && blackActive || blackFirst && whiteActive);
+  const firstActive = (blackFirst && blackActive) || (!blackFirst && whiteActive);
+  const secondActive = (!blackFirst && blackActive) || (blackFirst && whiteActive);
 
   return (
     <div className={classes.root} style={{margin: "1vh"}}>

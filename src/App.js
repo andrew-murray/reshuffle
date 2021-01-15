@@ -48,11 +48,6 @@ class OthelloWithChat extends React.Component
     joinedRoom: null
   }
 
-  constructor(props)
-  {
-    super(props)
-  }
-
   connectToRoom(roomID)
   {
     if((this.state.joinedRoom !== roomID))
