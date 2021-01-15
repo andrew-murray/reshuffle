@@ -19,10 +19,7 @@ import OthelloBoard from "./games/OthelloBoard"
 import OthelloRules from "./games/OthelloRules"
 import {OfflineOthelloGame} from "./games/OthelloGame"
 import OthelloStatusBar from "./games/OthelloStatusBar"
-
-import io from "socket.io-client";
-const path = new URL( window.location.origin );
-const ENDPOINT = path.origin + ":8080";
+import socket from "./socket"
 
 const othelloStyles = (theme) => { return {
   root: {
@@ -52,29 +49,27 @@ class OthelloWithChat extends React.Component
   constructor(props)
   {
     super(props)
-    this.socket = null;
     this.joinedRoom = null;
   }
 
   connectToRoom(roomID)
   {
-    if((this.joinedRoom !== roomID) && this.socket)
+    if((this.joinedRoom !== roomID))
     {
       this.joinedRoom = roomID;
-      this.socket.emit('chat.join', roomID);
-      this.socket.emit("othello.join", roomID);
+      socket.emit('chat.join', roomID);
+      socket.emit("othello.join", roomID);
     }
   }
 
   componentDidMount() {
-    this.socket = io(ENDPOINT);
     this.connectToRoom(this.props.roomID);
-    this.socket.on('chat.message', (msg)=>{
+    socket.on('chat.message', (msg)=>{
       this.setState( (state, props) => {
           return {messages: state.messages.concat(msg)};
       });
     });
-    this.socket.on('othello.update', (othelloState)=>{
+    socket.on('othello.update', (othelloState)=>{
       this.setState((state,props)=>{
         const stateInvalid = !state.board
           || !state.activePlayer
@@ -105,43 +100,40 @@ class OthelloWithChat extends React.Component
     });
   }
 
-  componentWillUnmount()
-  {
-    // todo: react complains about state updates "after" componentWillUnmount
-    // "cancel all subscriptions and asynchronous tasks"
-    // but, this doesn't seem to solve it strangely
-    this.socket.disconnect();
-    delete this.socket;
-  }
-
   componentDidUpdate()
   {
     this.connectToRoom(this.props.roomID);
+  }
+
+  componentWillUnmount()
+  {
+    socket.off('chat.message');
+    socket.off('othello.update');
   }
 
   render()
   {
     const sendSwap = () =>
     {
-      if(this.state.role!== null && this.socket)
+      if(this.state.role!== null)
       {
-        this.socket.emit("othello.swap");
+        socket.emit("othello.swap");
       }
     };
 
     const sendReset = () =>
     {
-      if(this.state.role!== null && this.socket)
+      if(this.state.role!== null && socket)
       {
-        this.socket.emit("othello.reset");
+        socket.emit("othello.reset");
       }
     };
 
     const sendConcede = () =>
     {
-      if(this.state.role!==null && this.socket)
+      if(this.state.role!==null)
       {
-        this.socket.emit("othello.concede");
+        socket.emit("othello.concede");
       }
     }
 
@@ -164,9 +156,9 @@ class OthelloWithChat extends React.Component
             // provide a player, OthelloBoard requires one for now
             showMovesForPlayer={canMakeMoves}
             onMove={(action)=>{
-              if(action.position && this.socket && this.socket.connected)
+              if(action.position)
               {
-                this.socket.emit("othello.move", action);
+                socket.emit("othello.move", action);
               }
             }}
             style={styleForGame}
@@ -188,7 +180,7 @@ class OthelloWithChat extends React.Component
         </main>
         <ChatDrawer
           messages={this.state.messages}
-          onSend={(msg)=>{if(this.socket){this.socket.emit("chat.message", msg);}}}
+          onSend={(msg)=>{socket.emit("chat.message", msg);}}
           style={{width: "300px"}}
         />
       </div>
