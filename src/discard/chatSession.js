@@ -1,5 +1,6 @@
 const CircularBuffer = require("circular-buffer");
 const rooms = require("./rooms");
+const debug = require("debug")("chat");
 
 let sessionData = {};
 
@@ -27,6 +28,7 @@ function createChatIfNecessary(roomID)
 {
   if(!(roomID in sessionData))
   {
+    debug("creating chat " + roomID);
     sessionData[roomID] = {history: new CircularBuffer(100)};
     sessionData[roomID].history.push("this room was created...")
   }
@@ -36,6 +38,7 @@ function deleteChatIfNecessary(io, roomID)
 {
   if(!io.sockets.adapter.rooms.get(roomID))
   {
+    debug("deleting chat " + roomID);
     // room has already been cleared - clear associated data
     delete sessionData[roomID];
   }
@@ -69,6 +72,7 @@ function configureServer(io) // expects a socket.io server
   io.on('connection', function(socket) {
 
     socket.on('chat.create', (optionalID) => {
+      debug("socket " + socket.id + " requeste to create " + roomID ? roomID : "");
       if(optionalID)
       {
         if(io.sockets.adapter.rooms.get(optionalID))
@@ -96,11 +100,12 @@ function configureServer(io) // expects a socket.io server
       }
       socket.join(vacantRoom);
       joinChatRoom(io, socket, vacantRoom);
-      console.log(vacantRoom);
+      console.log("created " + vacantRoom);
       socket.emit("room.created", vacantRoom);
     });
 
     socket.on('chat.join', (roomID)=>{
+      debug("socket " + socket.id + " requested to join " + roomID );
       if(!socket.rooms.has(roomID))
       {
         socket.join(roomID);
