@@ -124,6 +124,11 @@ class OthelloWithChat extends React.Component
       }
     }
 
+    const whiteScore = !this.state.board ? 0 :
+      OthelloRules.countCellsForRole(this.state.board, OthelloRules.labels.white);
+    const blackScore = !this.state.board ? 0 :
+      OthelloRules.countCellsForRole(this.state.board, OthelloRules.labels.black);
+
     const gameIsActive = this.state.status === "active";
     console.log(this.state.status)
     return (
@@ -146,7 +151,11 @@ class OthelloWithChat extends React.Component
           <Button variant="outlined" onClick={sendReset} disabled={gameIsActive}> Reset </Button>
           <Button variant="outlined" onClick={sendConcede} disabled={!gameIsActive}> Concede </Button>
         </div>
-        <OthelloStatusBar />
+        <OthelloStatusBar
+          role={this.state.role}
+          whiteScore={whiteScore}
+          blackScore={blackScore}
+        />
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{if(this.socket){this.socket.emit("chat.message", msg);}}}

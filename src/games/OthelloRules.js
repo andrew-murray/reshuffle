@@ -203,7 +203,7 @@ const boardsEqual = (a,b)=>
   return false;
 }
 
-const countCellsForRole = (board, role)=>
+const countCellsForRole = (board, role) =>
 {
   let total = 0;
   for(const y of [...Array(board.length).keys()])

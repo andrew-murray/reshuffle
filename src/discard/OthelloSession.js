@@ -181,7 +181,7 @@ const configureServer = (io)=>{
         onDisconnect(io, socket, roomID);
       });
       // wire up game actions, if necessary
-      if(sessionData[roomID].players.get(socket.id)!==null)
+      if(sessionData[roomID].players.get(socket.id) !== null)
       {
         socket.on("othello.move",(move)=>{
           onMakeMove(io, socket, roomID, move.position);
