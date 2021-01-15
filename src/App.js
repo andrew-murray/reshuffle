@@ -226,7 +226,7 @@ function App() {
                 <OfflineOthelloGame />
               </Route>
               <Route
-                path="/room/:roomID/"
+                path="/othello/:roomID/"
                 component={(props)=> <StyledOthelloWithChat roomID={props.match.params.roomID} />}
               />
             </Switch>
