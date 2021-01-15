@@ -19,6 +19,7 @@ import OthelloBoard from "./games/OthelloBoard"
 import OthelloRules from "./games/OthelloRules"
 import {OfflineOthelloGame} from "./games/OthelloGame"
 import OthelloStatusBar from "./games/OthelloStatusBar"
+import { useHistory } from "react-router-dom";
 import socket from "./socket"
 
 const othelloStyles = (theme) => { return {
@@ -190,10 +191,12 @@ class OthelloWithChat extends React.Component
 
 const StyledOthelloWithChat = withStyles(othelloStyles)(OthelloWithChat);
 
-
 function App() {
 
+  let history = useHistory();
+
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
 
   const theme = React.useMemo(
     () =>
@@ -205,27 +208,44 @@ function App() {
     [prefersDarkMode],
   );
 
+  React.useEffect(()=>{
+    socket.on("room.created", (roomID)=>
+    {
+      history.push("othello/room/" + roomID);
+    })
+    return ()=>{socket.off("room.created");}
+  });
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+        <div className="App">
+          <Switch>
+            <Route exact path="/">
+              <TitleScreen
+                onCreate={()=>{socket.emit("chat.create");}}
+              />
+            </Route>
+            <Route exact path="/othello/practice">
+              <OfflineOthelloGame />
+            </Route>
+            <Route
+              path="/othello/room/:roomID/"
+              component={(props)=> <StyledOthelloWithChat roomID={props.match.params.roomID} />}
+            />
+          </Switch>
+        </div>
+    </ThemeProvider>
+  );
+}
+
+function RouterRoot()
+{
   return (
     <Router>
-      <ThemeProvider theme={theme}>
-        <CssBaseline/>
-          <div className="App">
-            <Switch>
-              <Route exact path="/">
-                <TitleScreen />
-              </Route>
-              <Route exact path="/othello/practice">
-                <OfflineOthelloGame />
-              </Route>
-              <Route
-                path="/othello/room/:roomID/"
-                component={(props)=> <StyledOthelloWithChat roomID={props.match.params.roomID} />}
-              />
-            </Switch>
-          </div>
-      </ThemeProvider>
+      <App/>
     </Router>
   );
 }
 
-export default App;
+export default RouterRoot;

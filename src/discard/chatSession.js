@@ -72,7 +72,7 @@ function configureServer(io) // expects a socket.io server
   io.on('connection', function(socket) {
 
     socket.on('chat.create', (optionalID) => {
-      debug("socket " + socket.id + " requeste to create " + roomID ? roomID : "");
+      debug("socket " + socket.id + " requeste to create " + optionalID ? optionalID : "");
       if(optionalID)
       {
         if(io.sockets.adapter.rooms.get(optionalID))

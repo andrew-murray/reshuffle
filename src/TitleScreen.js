@@ -12,7 +12,7 @@ function TitleScreen(props) {
   let [joinDialogOpen, setJoinDialogOpen] = React.useState(false);
 
   const menuItems = [
-    {text: "Create Room",onClick: ()=>{ history.push("/othello/room/default");}},
+    {text: "Create Room",onClick: props.onCreate},
     {text: "Join Room", onClick: ()=>{setJoinDialogOpen(true);} },
     {text: "Practice", onClick: ()=>{ history.push("/othello/practice"); }}
   ];
