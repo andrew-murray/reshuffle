@@ -44,22 +44,26 @@ class OthelloWithChat extends React.Component
     board: null,
     role: null,
     activePlayer: null,
-    status: null
+    status: null,
+    joinedRoom: null
   }
 
   constructor(props)
   {
     super(props)
-    this.joinedRoom = null;
   }
 
   connectToRoom(roomID)
   {
-    if((this.joinedRoom !== roomID))
+    if((this.state.joinedRoom !== roomID))
     {
-      this.joinedRoom = roomID;
-      socket.emit('chat.join', roomID);
-      socket.emit("othello.join", roomID);
+      this.setState(
+        { joinedRoom: roomID },
+        () => {
+          socket.emit('chat.join', roomID);
+          socket.emit("othello.join", roomID);
+        }
+      );
     }
   }
 
