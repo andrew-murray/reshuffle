@@ -52,7 +52,6 @@ class ChatDrawer extends React.Component
       const drawerStyle = Object.assign( Object.assign({}, localStyle), this.props.style );
 
       // another option for this list, is react-window?
-      console.log(this.props.className);
       return (
           <Drawer
             variant="permanent"

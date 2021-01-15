@@ -21,7 +21,8 @@ import {OfflineOthelloGame} from "./games/OthelloGame"
 import OthelloStatusBar from "./games/OthelloStatusBar"
 
 import io from "socket.io-client";
-const ENDPOINT = "http://localhost:8080/";
+const path = new URL( window.location.origin );
+const ENDPOINT = path.origin + ":8080";
 
 const othelloStyles = (theme) => { return {
   root: {
@@ -35,6 +36,8 @@ const othelloStyles = (theme) => { return {
     width: 300
   }
 } };
+
+const notifyNoise = new Audio("/zapsplat_impacts_wood_thin_small_panel_knock_hit_lite_muted_004_39796.mp3");
 
 class OthelloWithChat extends React.Component
 {
@@ -73,16 +76,20 @@ class OthelloWithChat extends React.Component
     });
     this.socket.on('othello.update', (othelloState)=>{
       this.setState((state,props)=>{
-        if(
-          !state.board
+        const stateInvalid = !state.board
           || !state.activePlayer
-          || !state.player
-          || !state.status
-          || !OthelloRules.boardsEqual(state.board, othelloState.board)
+          || !state.role
+          || !state.status;
+        if( stateInvalid
           || othelloState.role !== state.role
           || othelloState.activePlayer !== state.activePlayer
-          || othelloState.status !== state.status)
+          || othelloState.status !== state.status
+          || !OthelloRules.boardsEqual(state.board, othelloState.board))
         {
+          if(!stateInvalid)
+          {
+            notifyNoise.play();
+          }
           return {
             board: othelloState.board,
             activePlayer: othelloState.activePlayer,

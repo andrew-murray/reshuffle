@@ -35,7 +35,7 @@ function TitleScreen(props) {
       </List>
       <TextEntryDialog
         open={joinDialogOpen}
-        text="Paste room name"
+        text="Enter room name"
         onConfirm={(roomName)=>{
           if(roomName)
           {
