@@ -1,4 +1,4 @@
-const OthelloRules = require("../games/OthelloRules");
+const OthelloRules = require("./OthelloRules");
 const debug = require("debug");
 const debugEvent = debug("othello");
 const debugState = debug("othello.state");

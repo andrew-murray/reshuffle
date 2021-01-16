@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import OthelloRules from "./OthelloBabelRules";
+import OthelloRules from "./OthelloRules";
 import Chip from '@material-ui/core/Chip';
 import CircleIcon from '@material-ui/icons/FiberManualRecord';
 

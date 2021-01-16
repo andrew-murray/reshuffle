@@ -16,7 +16,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TitleScreen from "./TitleScreen";
 import ChatDrawer from "./ChatDrawer";
 import OthelloBoard from "./games/OthelloBoard"
-import OthelloRules from "./games/OthelloBabelRules";
+import OthelloRules from "./games/OthelloRules";
 import {OfflineOthelloGame} from "./games/OthelloGame"
 import OthelloStatusBar from "./games/OthelloStatusBar"
 import { useHistory } from "react-router-dom";
