@@ -35,7 +35,8 @@ const othelloStyles = (theme) => { return {
   }
 } };
 
-const notifyNoise = new Audio("/zapsplat_impacts_wood_thin_small_panel_knock_hit_lite_muted_004_39796.mp3");
+const mp3File = "zapsplat_impacts_wood_thin_small_panel_knock_hit_lite_muted_004_39796.mp3";
+const notifyNoise = new Audio(process.env.PUBLIC_URL + "/" + mp3File);
 
 class OthelloWithChat extends React.Component
 {
@@ -241,7 +242,7 @@ function App() {
 function RouterRoot()
 {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <App/>
     </Router>
   );
