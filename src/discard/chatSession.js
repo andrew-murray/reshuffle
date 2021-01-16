@@ -30,7 +30,7 @@ function createChatIfNecessary(roomID)
   {
     debug("creating chat " + roomID);
     sessionData[roomID] = {history: new CircularBuffer(100)};
-    sessionData[roomID].history.push("this room was created...")
+    sessionData[roomID].history.push("Room " + roomID + " was created.")
   }
 }
 
