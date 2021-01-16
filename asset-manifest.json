@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/reshuffle/static/css/main.dbfeab1e.chunk.css",
-    "main.js": "/reshuffle/static/js/main.63be9454.chunk.js",
-    "main.js.map": "/reshuffle/static/js/main.63be9454.chunk.js.map",
+    "main.js": "/reshuffle/static/js/main.5ede465a.chunk.js",
+    "main.js.map": "/reshuffle/static/js/main.5ede465a.chunk.js.map",
     "runtime-main.js": "/reshuffle/static/js/runtime-main.0fe336b1.js",
     "runtime-main.js.map": "/reshuffle/static/js/runtime-main.0fe336b1.js.map",
-    "static/js/2.5bf0b8bd.chunk.js": "/reshuffle/static/js/2.5bf0b8bd.chunk.js",
-    "static/js/2.5bf0b8bd.chunk.js.map": "/reshuffle/static/js/2.5bf0b8bd.chunk.js.map",
+    "static/js/2.5606a51f.chunk.js": "/reshuffle/static/js/2.5606a51f.chunk.js",
+    "static/js/2.5606a51f.chunk.js.map": "/reshuffle/static/js/2.5606a51f.chunk.js.map",
     "static/js/3.e7bde33a.chunk.js": "/reshuffle/static/js/3.e7bde33a.chunk.js",
     "static/js/3.e7bde33a.chunk.js.map": "/reshuffle/static/js/3.e7bde33a.chunk.js.map",
     "index.html": "/reshuffle/index.html",
     "static/css/main.dbfeab1e.chunk.css.map": "/reshuffle/static/css/main.dbfeab1e.chunk.css.map",
-    "static/js/2.5bf0b8bd.chunk.js.LICENSE.txt": "/reshuffle/static/js/2.5bf0b8bd.chunk.js.LICENSE.txt"
+    "static/js/2.5606a51f.chunk.js.LICENSE.txt": "/reshuffle/static/js/2.5606a51f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.0fe336b1.js",
-    "static/js/2.5bf0b8bd.chunk.js",
+    "static/js/2.5606a51f.chunk.js",
     "static/css/main.dbfeab1e.chunk.css",
-    "static/js/main.63be9454.chunk.js"
+    "static/js/main.5ede465a.chunk.js"
   ]
 }
