@@ -255,20 +255,16 @@ const changesForAllPositions = (game, role) => {
   return results;
 }
 
-const moduleExports = {
-  boardsEqual: boardsEqual,
-  canPlay: canPlay,
-  changesForAllPositions: changesForAllPositions,
-  comparePosition: comparePosition,
-  countCellsForRole: countCellsForRole,
-  createBoardStateWithMove: createBoardStateWithMove,
-  createEmptyBoardState: createEmptyBoardState,
-  createInitialBoardState: createInitialBoardState,
-  changesFromPlay: changesFromPlay,
-  isGameCoordinate: isGameCoordinate,
-  opponentForPlayer: opponentForPlayer,
-  playerCanPlay: playerCanPlay,
-  labels: labels
-};
-
-module.exports = moduleExports;
+exports.boardsEqual = boardsEqual;
+exports.canPlay = canPlay;
+exports.changesForAllPositions = changesForAllPositions;
+exports.comparePosition = comparePosition;
+exports.countCellsForRole = countCellsForRole;
+exports.createBoardStateWithMove = createBoardStateWithMove;
+exports.createEmptyBoardState = createEmptyBoardState;
+exports.createInitialBoardState = createInitialBoardState;
+exports.changesFromPlay = changesFromPlay;
+exports.isGameCoordinate = isGameCoordinate;
+exports.opponentForPlayer = opponentForPlayer;
+exports.playerCanPlay = playerCanPlay;
+exports.labels = labels;

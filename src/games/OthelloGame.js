@@ -1,6 +1,6 @@
 import {Component} from "react"
 import OthelloBoard from "./OthelloBoard"
-import OthelloRules from "./OthelloRules"
+import OthelloRules from "./OthelloBabelRules";
 
 class OfflineOthelloGame extends Component
 {

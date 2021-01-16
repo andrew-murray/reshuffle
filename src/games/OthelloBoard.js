@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
-import OthelloRules from "./OthelloRules";
+import OthelloRules from "./OthelloBabelRules";
 
 class OthelloCell extends React.Component{
 
