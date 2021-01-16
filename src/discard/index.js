@@ -3,7 +3,7 @@ const http = require('http').Server(app);
 // todo: only enable cors in dev?
 const io = require('socket.io')(http, {
   cors: {
-    origin: "https://andrew-murray.github.io/",
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
