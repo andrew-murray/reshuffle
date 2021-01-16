@@ -46,7 +46,16 @@ class OthelloWithChat extends React.Component
     role: null,
     activePlayer: null,
     status: null,
-    joinedRoom: null
+    joinedRoom: null,
+    windowWidth: 0,
+    windowHeight: 0
+  }
+  constructor(props)
+  {
+    super(props)
+    // I think this is the cleanest way to implement this functionality
+    // https://stackoverflow.com/questions/36862334/get-viewport-window-height-in-reactjs
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
   connectToRoom(roomID)
@@ -63,8 +72,14 @@ class OthelloWithChat extends React.Component
     }
   }
 
+  updateWindowDimensions() {
+    this.setState((props,state)=>{ return{ windowWidth: window.innerWidth, windowHeight: window.innerHeight } });
+  }
+
   componentDidMount() {
     this.connectToRoom(this.props.roomID);
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
     socket.on('chat.message', (msg)=>{
       this.setState( (state, props) => {
           return {messages: state.messages.concat(msg)};
@@ -108,6 +123,7 @@ class OthelloWithChat extends React.Component
 
   componentWillUnmount()
   {
+    window.removeEventListener('resize', this.updateWindowDimensions);
     socket.off('chat.message');
     socket.off('othello.update');
   }
@@ -147,12 +163,16 @@ class OthelloWithChat extends React.Component
     const canMakeMoves = this.state.role === this.state.activePlayer ? this.state.role: null;
     const styleForGame = this.state.activePlayer === null ? {opacity: "50%"} : undefined;
 
+    // default board to be only as big as 85% of the screen's width
+    // we have additional content to fit vertically, so leave some extra wiggle room
+    const boardSize = Math.min( Math.min( this.state.windowWidth * 0.85, this.state.windowHeight * 0.75 ) , 450 );
+
     return (
       <div className={this.props.classes.root}>
         <main className={this.props.classes.content}>
           <OthelloBoard
-            width={400}
-            height={400}
+            width={boardSize}
+            height={boardSize}
             game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
             // provide a player, OthelloBoard requires one for now
             showMovesForPlayer={canMakeMoves}
@@ -182,7 +202,7 @@ class OthelloWithChat extends React.Component
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{socket.emit("chat.message", msg);}}
-          style={{width: "300px"}}
+          style={{width: Math.min(300, this.state.windowWidth * 0.75)}}
         />
       </div>
     );
