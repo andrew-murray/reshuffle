@@ -1,9 +1,9 @@
 const app = require('express')();
 const http = require('http').Server(app);
-// todo: only enable cors in dev?
+const production = !!process.env.PORT;
 const io = require('socket.io')(http, {
   cors: {
-    origin: "*",
+    origin: production ? "https://andrew-murray.github.io" : "http://localhost",
     methods: ["GET", "POST"]
   }
 });
