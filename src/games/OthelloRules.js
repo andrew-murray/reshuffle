@@ -196,11 +196,11 @@ const boardsEqual = (a,b)=>
     {
       if(a[y][x] !== b[y][x])
       {
-        return true;
+        return false;
       }
     }
   }
-  return false;
+  return true;
 }
 
 const countCellsForRole = (board, role) =>

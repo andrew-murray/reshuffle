@@ -183,7 +183,7 @@ const createEmptyBoardState = (height, width) => {
   });
 }
 
-const boardsEqual = (a,b)=>
+const boardsEqual = (a,b) =>
 {
   // todo: validate boards are square
   if(a.length !== b.length || a[0].length !== b[0].length)
@@ -196,11 +196,11 @@ const boardsEqual = (a,b)=>
     {
       if(a[y][x] !== b[y][x])
       {
-        return true;
+        return false;
       }
     }
   }
-  return false;
+  return true;
 }
 
 const countCellsForRole = (board, role) =>
