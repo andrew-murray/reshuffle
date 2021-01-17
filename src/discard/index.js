@@ -19,12 +19,17 @@ io.on('connection', function(socket) {
 });
 
 let server = http.listen(port, () => {
-  console.log(`Socket.IO server running at http://localhost:${port}/`);
+  if (require.main === module) {
+    console.log(`Socket.IO server running at http://localhost:${port}/`);
+  }
 });
 
 const path = `http://localhost:${port}/`;
 
 module.exports = {
+  io: io,
   server: server,
-  path: path
+  path: path,
+  othello: othelloSession,
+  chat: chatSession
 }

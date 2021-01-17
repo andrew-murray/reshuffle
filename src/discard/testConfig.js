@@ -48,6 +48,21 @@ const beforeEach = (done) => {
   });
 };
 
+// todo: rewrite in an async idiom
+const createSocket = (socket, client, httpServer, done) => {
+  // Setup
+  let httpServerAddr = httpServer.address();
+
+  // Do not hardcode server port and address, square brackets are used for IPv6
+  socket = client.connect(`http://[${httpServerAddr.address}]:${httpServerAddr.port}`, {
+    'reconnection delay': 0,
+    'reopen delay': 0,
+    'force new connection': true,
+    transports: ['websocket'],
+  });
+  socket.once('connect', done);
+};
+
 /**
  * Run after each test
  */
@@ -63,5 +78,6 @@ globals.beforeEach = beforeEach;
 globals.beforeAll = beforeAll;
 globals.afterEach = afterEach;
 globals.afterAll = afterAll;
+globals.createSocket = createSocket;
 
 module.exports = globals;
