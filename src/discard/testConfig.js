@@ -53,13 +53,20 @@ const createSocket = (client, httpServer) => {
   return new Promise((resolve, reject) => {
     // Setup
     let httpServerAddr = httpServer.address();
-    let sockets = [];
     // Do not hardcode server port and address, square brackets are used for IPv6
-    socket = client.connect(`http://[${httpServerAddr.address}]:${httpServerAddr.port}`, {
+    let socket = client.connect(`http://[${httpServerAddr.address}]:${httpServerAddr.port}`, {
       'reconnection delay': 0,
       'reopen delay': 0,
       'force new connection': true,
       transports: ['websocket'],
+    });
+    socket.eventHistory = [];
+    // listen to any events
+    socket.onAny((event, ...args)=>{
+      socket.eventHistory.push({
+          event: event,
+          arguments: args
+      });
     });
     socket.once('connect', ()=>{resolve(socket);});
   });
@@ -69,7 +76,58 @@ const createSockets  = (client, httpServer, n) => {
   return Promise.all(
     [...Array(n).keys()].map(i=>createSocket(client,httpServer))
   );
-}
+};
+
+const disconnectAll = (io, sockets) =>
+{
+  return new Promise((resolve, reject) => {
+    let remainingSocketIDs = sockets.map(s=>s.id);
+    const disconnectCallback = (id)=>{
+      const indexID = remainingSocketIDs.indexOf(id);
+      if(indexID >= 0)
+      {
+        remainingSocketIDs.splice(indexID, 1);
+      }
+      if(remainingSocketIDs.length === 0){
+        resolve(sockets);
+      }
+    };
+    for( const socketID of remainingSocketIDs )
+    {
+      io.sockets.sockets.get(socketID).on(
+        "disconnect",
+        ()=>{disconnectCallback(socketID);}
+      );
+    }
+    for(s of sockets)
+    {
+      s.disconnect(true);
+    }
+  });
+};
+
+const awaitConditionOnSocket = (socket,callback) => {
+  return new Promise((resolve, reject) => {
+    socket.onAny(()=>{
+      if(callback(socket))
+      {
+        resolve(socket);
+      }
+    });
+  });
+};
+
+const awaitConditionOnSockets = (sockets, callback) => {
+  return Promise.all(
+    sockets.map(socket=>awaitConditionOnSocket(socket, callback))
+  );
+};
+
+const awaitConditionsOnSockets = (sockets, callbacks) => {
+  return Promise.all(
+    [...Array(sockets.length).keys()].map(i=>awaitConditionOnSocket(sockets[i], callbacks[i]))
+  );
+};
 
 /**
  * Run after each test
@@ -86,7 +144,12 @@ globals.beforeEach = beforeEach;
 globals.beforeAll = beforeAll;
 globals.afterEach = afterEach;
 globals.afterAll = afterAll;
+
 globals.createSocket = createSocket;
 globals.createSockets = createSockets;
+globals.disconnectAll = disconnectAll;
+globals.awaitConditionOnSocket = awaitConditionOnSocket;
+globals.awaitConditionOnSockets = awaitConditionOnSockets;
+globals.awaitConditionsOnSockets = awaitConditionsOnSockets;
 
 module.exports = globals;
