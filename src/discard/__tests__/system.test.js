@@ -9,18 +9,10 @@ afterAll((done)=>{
 })
 
 describe('basic othello example', () => {
-  test('blargh', (done) => {
+  test('blargh',  (done) => {
     let sessionData = {};
-    let socketFirst = null;
-    let socketSecond = null;
     system.othello.initialiseStorage(sessionData);
-    const runTest = ()=>
-    {
-      done();
-    };
-    const setupSocket2 = ()=>{
-      config.createSocket(socketSecond, io, system.server, runTest);
-    };
-    config.createSocket(socketFirst, io, system.server, setupSocket2)
+    return config.createSockets(io, system.server, 2)
+    .then((sockets)=>{done();});
   });
 });

@@ -49,19 +49,27 @@ const beforeEach = (done) => {
 };
 
 // todo: rewrite in an async idiom
-const createSocket = (socket, client, httpServer, done) => {
-  // Setup
-  let httpServerAddr = httpServer.address();
-
-  // Do not hardcode server port and address, square brackets are used for IPv6
-  socket = client.connect(`http://[${httpServerAddr.address}]:${httpServerAddr.port}`, {
-    'reconnection delay': 0,
-    'reopen delay': 0,
-    'force new connection': true,
-    transports: ['websocket'],
+const createSocket = (client, httpServer) => {
+  return new Promise((resolve, reject) => {
+    // Setup
+    let httpServerAddr = httpServer.address();
+    let sockets = [];
+    // Do not hardcode server port and address, square brackets are used for IPv6
+    socket = client.connect(`http://[${httpServerAddr.address}]:${httpServerAddr.port}`, {
+      'reconnection delay': 0,
+      'reopen delay': 0,
+      'force new connection': true,
+      transports: ['websocket'],
+    });
+    socket.once('connect', ()=>{resolve(socket);});
   });
-  socket.once('connect', done);
 };
+
+const createSockets  = (client, httpServer, n) => {
+  return Promise.all(
+    [...Array(n).keys()].map(i=>createSocket(client,httpServer))
+  );
+}
 
 /**
  * Run after each test
@@ -79,5 +87,6 @@ globals.beforeAll = beforeAll;
 globals.afterEach = afterEach;
 globals.afterAll = afterAll;
 globals.createSocket = createSocket;
+globals.createSockets = createSockets;
 
 module.exports = globals;
