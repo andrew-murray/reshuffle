@@ -207,38 +207,36 @@ const onDisconnect = (io, socket, roomID) =>
   }
 };
 
-const configureServer = (io)=>{
-  io.on('connection', function(socket) {
-    socket.on('othello.join', function(roomID){
-      debugEvent("received othello.join for " + roomID);
-      // todo: just want to get to the point where we can receive
-      // the initial population of the board first
-      // wire up game actions, if necessary
-      const needsWiring = !(roomID in sessionData) || !sessionData[roomID].players.has(socket.id);
-      if(needsWiring)
-      {
-        onConnect(io, socket, roomID);
-        socket.on("othello.move",(move)=>{
-          onMakeMove(io, socket, roomID, move.position);
-        });
-        socket.on('othello.swap', ()=>{
-          swapRoles(io, socket, roomID);
-        });
-        socket.on('othello.reset', ()=>{
-          restartGame(io, socket, roomID);
-        });
-        socket.on('othello.concede', ()=>{
-          concedeGame(io, socket, roomID);
-        });
-        socket.on("disconnect",()=>{
-          onDisconnect(io, socket, roomID);
-        });
-      }
-    });
+const subscribe = (io, socket)=>{
+  socket.on('othello.join', function(roomID){
+    debugEvent("received othello.join for " + roomID);
+    // todo: just want to get to the point where we can receive
+    // the initial population of the board first
+    // wire up game actions, if necessary
+    const needsWiring = !(roomID in sessionData) || !sessionData[roomID].players.has(socket.id);
+    if(needsWiring)
+    {
+      onConnect(io, socket, roomID);
+      socket.on("othello.move",(move)=>{
+        onMakeMove(io, socket, roomID, move.position);
+      });
+      socket.on('othello.swap', ()=>{
+        swapRoles(io, socket, roomID);
+      });
+      socket.on('othello.reset', ()=>{
+        restartGame(io, socket, roomID);
+      });
+      socket.on('othello.concede', ()=>{
+        concedeGame(io, socket, roomID);
+      });
+      socket.on("disconnect",()=>{
+        onDisconnect(io, socket, roomID);
+      });
+    }
   });
 };
 
 module.exports = {
   initialiseStorage: initialiseStorage,
-  configureServer: configureServer
+  subscribe: subscribe
 };
