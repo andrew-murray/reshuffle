@@ -1,6 +1,10 @@
 let system = require("../index");
 const io = require('socket.io-client');
 const config = require("../testConfig");
+const OthelloRules = require("../OthelloRules");
+
+let sessionData = {};
+system.othello.initialiseStorage(sessionData);
 
 afterAll((done)=>{
   system.io.close();
@@ -8,12 +12,9 @@ afterAll((done)=>{
   done();
 })
 
-describe('basic othello example', () => {
-  test('othello.join',  () => {
-    const roomID = "my-silly-room";
-    let sessionData = {};
-    system.othello.initialiseStorage(sessionData);
-    return config.createSockets(io, system.server, 2).then((sockets)=>{
+const createRoomWithTwoPlayers = (roomID)=>{
+  return config.createSockets(io, system.server, 2)
+    .then((sockets)=>{
       // assert current state
       expect(sessionData).toMatchObject({});
       expect(sockets[0].eventHistory).toStrictEqual([]);
@@ -33,11 +34,48 @@ describe('basic othello example', () => {
         sockets,
         successCriteria
       );
-    })
-    .then((sockets)=>{
-      expect(sockets[0].eventHistory.length).toBe(2);
-      expect(sockets[1].eventHistory.length).toBe(1);
-      return config.disconnectAll(system.io, sockets);
     });
+}
+
+describe('basic othello example', () => {
+  test('othello.join',  () => {
+    const roomID = "my-silly-room";
+    return createRoomWithTwoPlayers(roomID)
+      .then((sockets)=>{
+        expect(sockets[0].eventHistory.length).toBe(2);
+
+        // first event, sockets[0] joined
+        expect(sockets[0].eventHistory[0].event).toBe("othello.update");
+        expect(sockets[0].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.black);
+        expect(sockets[0].eventHistory[0].arguments[0].status).toBe("new");
+        expect(sockets[0].eventHistory[0].arguments[0].activePlayer).toBe(null);
+        expect(OthelloRules.boardsEqual(
+          sockets[0].eventHistory[0].arguments[0].board,
+          OthelloRules.createInitialBoardState()
+        )).toBeTruthy();
+
+        // second event, sockets[1] joined,  sent to sockets[0]
+        expect(sockets[0].eventHistory[1].event).toBe("othello.update");
+        expect(sockets[0].eventHistory[1].arguments[0].role).toBe(OthelloRules.labels.black);
+        expect(sockets[0].eventHistory[1].arguments[0].status).toBe("new");
+        expect(sockets[0].eventHistory[1].arguments[0].activePlayer).toBe(OthelloRules.labels.black);
+        expect(OthelloRules.boardsEqual(
+          sockets[0].eventHistory[1].arguments[0].board,
+          OthelloRules.createInitialBoardState()
+        )).toBeTruthy();
+
+        // second event, sockets[1] joined, sent to sockets[1]
+        expect(sockets[1].eventHistory.length).toBe(1);
+        expect(sockets[1].eventHistory[0].event).toBe("othello.update");
+        expect(sockets[1].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.white);
+        expect(sockets[1].eventHistory[0].arguments[0].status).toBe("new");
+        expect(sockets[1].eventHistory[0].arguments[0].activePlayer).toBe(OthelloRules.labels.black);
+        expect(OthelloRules.boardsEqual(
+          sockets[0].eventHistory[1].arguments[0].board,
+          OthelloRules.createInitialBoardState()
+        )).toBeTruthy();
+
+        return config.disconnectAll(system.io, sockets);
+      });
   });
 });
