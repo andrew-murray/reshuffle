@@ -39,7 +39,7 @@ const createRoomWithTwoPlayers = (roomID)=>{
 
 describe('basic othello example', () => {
   test('othello.join',  () => {
-    const roomID = "my-silly-room";
+    const roomID = expect.getState().currentTestName;
     return createRoomWithTwoPlayers(roomID)
       .then((sockets)=>{
         expect(sockets[0].eventHistory.length).toBe(2);
@@ -77,5 +77,86 @@ describe('basic othello example', () => {
 
         return config.disconnectAll(system.io, sockets);
       });
+  });
+  test('othello.move.pass',  () => {
+    const roomID = expect.getState().currentTestName;
+    return createRoomWithTwoPlayers(roomID).then((sockets)=>{
+      // forget any events up until now
+      sockets[0].eventHistory = [];
+      sockets[1].eventHistory = [];
+
+      // define current game state to be bugged case found through player
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      sessionData[roomID].board = [
+        [b,b,b,b,b,b,b,e],
+        [b,b,w,w,w,b,b,b],
+        [b,w,b,w,b,w,b,w],
+        [b,b,w,b,w,w,b,w],
+        [b,w,b,w,b,b,w,w],
+        [b,b,w,b,w,w,b,w],
+        [b,b,b,b,b,b,b,e],
+        [e,b,b,b,b,b,b,b]
+      ];
+      sessionData[roomID].activePlayer = OthelloRules.labels.white;
+      sessionData[roomID].status = "active";
+
+      // white's turn
+      sockets[1].emit("othello.move", {position: [0,7]});
+      return Promise.resolve(config.awaitConditionOnSockets(
+        sockets,
+        (socket)=>{return socket.eventHistory.length === 1;}
+      ));
+    }).then(sockets=>{
+      // this is somewhat a regression test
+      // the case I've set up, actually seems to be behaving "okay"
+      // which probably means I haven't accurately reproduced the bug
+
+      // currently black can't play anywhere,
+      // so automatically passes back to white
+      // the behaviour I observed was that in some game state black could play
+      // but when I sent moves - the server didn't process them properly
+
+      // regress the current behaviour
+
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      const boardState = [
+        [b,b,b,b,b,b,b,w],
+        [b,b,w,w,w,b,w,w],
+        [b,w,b,w,b,w,b,w],
+        [b,b,w,b,w,w,b,w],
+        [b,w,b,w,b,b,w,w],
+        [b,b,w,b,w,w,b,w],
+        [b,b,b,b,b,b,b,e],
+        [e,b,b,b,b,b,b,b]
+      ];
+
+      expect(sockets[0].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[0].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.black);
+      expect(sockets[0].eventHistory[0].arguments[0].status).toBe("active");
+      expect(sockets[0].eventHistory[0].arguments[0].activePlayer).toBe(OthelloRules.labels.white);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[0].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      expect(sockets[1].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[1].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.white);
+      expect(sockets[1].eventHistory[0].arguments[0].status).toBe("active");
+      expect(sockets[1].eventHistory[0].arguments[0].activePlayer).toBe(OthelloRules.labels.white);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[1].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      return sockets;
+    }).then(sockets=>{
+      return config.disconnectAll(system.io, sockets);
+    });
   });
 });

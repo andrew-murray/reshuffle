@@ -10,6 +10,24 @@ const initialiseStorage = (storage) =>
   sessionData = storage;
 }
 
+const dataForPlayer = (data, playerID) =>
+{
+  return {
+    board: data.board,
+    activePlayer: data.activePlayer,
+    status: data.status,
+    role: data.players.get(playerID)
+  };
+}
+
+const refreshClientState = (io, roomID) =>
+{
+  for( playerID of sessionData[roomID].players.keys() )
+  {
+    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID) );
+  }
+};
+
 const onConnect = (io, socket, roomID) =>
 {
   debugEvent("received connect for socket " + socket.id + " for room " + roomID);
@@ -49,10 +67,7 @@ const onConnect = (io, socket, roomID) =>
   const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
   const playerMessage = "There " + (playerCount !== 1 ? "are " : "is ")
     + playerString + " and " + obString + " present.";
-  for( playerID of sessionData[roomID].players.keys() )
-  {
-    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
-  }
+  refreshClientState(io, roomID);
   io.to(roomID).emit("chat.message", playerMessage);
 };
 
@@ -71,10 +86,7 @@ const swapRoles = (io,socket,roomID)=>
     const updatedPlayers = new Map( updatedPlayerArray );
     sessionData[roomID].players = updatedPlayers;
   }
-  for( playerID of sessionData[roomID].players.keys() )
-  {
-    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
-  }
+  refreshClientState(io, roomID);
 }
 
 const countObservers = (players) =>
@@ -99,10 +111,7 @@ const restartGame = (io, socket, roomID) =>
     // status is an object, when conceded (see below)
     sessionData[roomID].status = "new";
   }
-  for( playerID of sessionData[roomID].players.keys() )
-  {
-    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
-  }
+  refreshClientState(io, roomID);
 };
 
 const concedeGame = (io, socket, roomID) =>
@@ -128,21 +137,8 @@ const concedeGame = (io, socket, roomID) =>
   {
     io.to(roomID).emit("chat.message", msg);
   }
-  for( playerID of sessionData[roomID].players.keys() )
-  {
-    io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID));
-  }
+  refreshClientState(io, roomID);
 };
-
-const dataForPlayer = (data, playerID)=>
-{
-  return {
-    board: data.board,
-    activePlayer: data.activePlayer,
-    status: data.status,
-    role: data.players.get(playerID)
-  };
-}
 
 const onMakeMove = (io, socket, roomID, position)=>
 {
@@ -184,10 +180,7 @@ const onMakeMove = (io, socket, roomID, position)=>
       sessionData[roomID].status = gameOver ? "complete" : "active";
     }
 
-    for( playerID of sessionData[roomID].players.keys() )
-    {
-      io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID) );
-    }
+    refreshClientState(io, roomID);
   }
 }
 
@@ -238,5 +231,6 @@ const subscribe = (io, socket)=>{
 
 module.exports = {
   initialiseStorage: initialiseStorage,
-  subscribe: subscribe
+  subscribe: subscribe,
+  refreshClientState: refreshClientState
 };
