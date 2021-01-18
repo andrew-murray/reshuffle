@@ -28,6 +28,17 @@ const refreshClientState = (io, roomID) =>
   }
 };
 
+const sendPlayerUpdate = (io, roomID) =>
+{
+  const observerCount = countObservers(sessionData[roomID].players);
+  const playerCount = sessionData[roomID].players.size - observerCount;
+  const playerString = playerCount.toString() + " player" + (playerCount !== 1 ? "s" : "");
+  const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
+  const playerMessage = "There " + (playerCount !== 1 ? "are " : "is ")
+    + playerString + " and " + obString + " present.";
+  io.to(roomID).emit("chat.message", playerMessage);
+};
+
 const onConnect = (io, socket, roomID) =>
 {
   debugEvent("received connect for socket " + socket.id + " for room " + roomID);
@@ -45,7 +56,8 @@ const onConnect = (io, socket, roomID) =>
       status: "new"
     };
   }
-  else if(sessionData[roomID].players.size === 1 && sessionData[roomID])
+  else if(sessionData[roomID]
+    && (sessionData[roomID].players.size - countObservers(sessionData[roomID].players)) === 1)
   {
     debugEvent("adding opponent");
     const existingRole = Array.from(sessionData[roomID].players.values())[0];
@@ -61,14 +73,8 @@ const onConnect = (io, socket, roomID) =>
   }
   debugState(sessionData[roomID]);
   // regardless of the above - send the player the appropriate update
-  const observerCount = countObservers(sessionData[roomID].players);
-  const playerCount = sessionData[roomID].players.size - observerCount;
-  const playerString = playerCount.toString() + " player" + (playerCount !== 1 ? "s" : "");
-  const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
-  const playerMessage = "There " + (playerCount !== 1 ? "are " : "is ")
-    + playerString + " and " + obString + " present.";
   refreshClientState(io, roomID);
-  io.to(roomID).emit("chat.message", playerMessage);
+  sendPlayerUpdate(io, roomID);
 };
 
 const swapRoles = (io,socket,roomID)=>
@@ -201,6 +207,7 @@ const onDisconnect = (io, socket, roomID) =>
   {
     debugEvent("removing player")
     sessionData[roomID].players.delete(socket.id);
+    sendPlayerUpdate(io, roomID);
   }
 };
 
