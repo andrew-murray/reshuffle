@@ -39,24 +39,29 @@ function TitleScreen(props) {
   >
     {text}
   </Button>
+
+  const joinRoom = (roomName)=>{
+    if(roomName)
+    {
+      history.push("/othello/room/" + roomName);
+      if(joinDialogOpen){setJoinDialogOpen(false);}
+    }
+  };
+
   return (
     <main>
-      <SessionTable />
+      <SessionTable
+        onJoin={joinRoom}
+        />
       <div className={classes.actionGroup}>
         {makeButton("Create Room", props.onCreate)}
-        {makeButton("Join Room", ()=>{setJoinDialogOpen(true);})}
+        {makeButton("Find Room", ()=>{setJoinDialogOpen(true);})}
         {makeButton("Practice", ()=>{ history.push("/othello/practice"); })}
       </div>
       <TextEntryDialog
         open={joinDialogOpen}
         text="Enter room name"
-        onConfirm={(roomName)=>{
-          if(roomName)
-          {
-            history.push("/othello/room/" + roomName);
-            setJoinDialogOpen(false);
-          }
-        }}
+        onConfirm={joinRoom}
         onCancel={()=>{setJoinDialogOpen(false);}}
       />
       <TitledDialog

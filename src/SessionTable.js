@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -44,31 +45,40 @@ const useStyles = makeStyles({
   },
 });
 
-export default function CustomizedTables() {
+export default function SessionTable(props) {
   const classes = useStyles();
+
+  const data = [
+    {name: "eg-1", playerCount: 2, observerCount: 0},
+    {name: "eg-2", playerCount: 2, observerCount: 0},
+    {name: "eg-3", playerCount: 2, observerCount: 0},
+    {name: "eg-4", playerCount: 2, observerCount: 0}
+  ];
+
+  let [roomData, setRoomData] = React.useState(data);
 
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-            <StyledTableCell align="right">Calories</StyledTableCell>
-            <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+            <StyledTableCell>Room</StyledTableCell>
+            <StyledTableCell align="right">Players</StyledTableCell>
+            <StyledTableCell align="right">Observers</StyledTableCell>
+            <StyledTableCell align="right"></StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {roomData.map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
                 {row.name}
               </StyledTableCell>
-              <StyledTableCell align="right">{row.calories}</StyledTableCell>
-              <StyledTableCell align="right">{row.fat}</StyledTableCell>
-              <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-              <StyledTableCell align="right">{row.protein}</StyledTableCell>
+              <StyledTableCell align="right">{row.playerCount}</StyledTableCell>
+              <StyledTableCell align="right">{row.observerCount}</StyledTableCell>
+              <StyledTableCell align="right">
+                <Button variant="contained" onClick={()=>props.onJoin(row.name)}>Join</Button>
+              </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
