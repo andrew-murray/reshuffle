@@ -82,7 +82,7 @@ const swapRoles = (io,socket,roomID)=>
   debugEvent("received swap for socket " + socket.id + " for room " + roomID);
   debugState(sessionData[roomID]);
 
-  if(roomID in sessionData && sessionData[roomID].status !== "active")
+  if(roomID in sessionData && sessionData[roomID].status === "new")
   {
     const playerArray = Array.from(sessionData[roomID].players);
     const updatedPlayerArray = playerArray.map(idAndRole =>[
