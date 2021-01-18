@@ -1,6 +1,4 @@
 import React from 'react';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
 import { useHistory, Link } from "react-router-dom";
 import TextEntryDialog from "./TextEntryDialog";
@@ -8,8 +6,17 @@ import TitledDialog from "./TitledDialog";
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
+import SessionTable from "./SessionTable";
 
+const useStyles = makeStyles((theme) => ({
+  actionGroup: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+}));
 
 const infoStyles = {
   position:"absolute",
@@ -18,34 +25,28 @@ const infoStyles = {
 };
 
 function TitleScreen(props) {
+  const classes = useStyles();
 
   const history = useHistory();
 
   let [joinDialogOpen, setJoinDialogOpen] = React.useState(false);
   let [infoDialogOpen, setInfoDialogOpen] = React.useState(false);
 
-  const menuItems = [
-    {text: "Create Room",onClick: props.onCreate},
-    {text: "Join Room", onClick: ()=>{setJoinDialogOpen(true);} },
-    {text: "Practice", onClick: ()=>{ history.push("/othello/practice"); }}
-  ];
-
-  const listItems = menuItems.map( (item) =>
-    <ListItem key={item.text}>
-        <Button
-          variant="contained" style={{width: "100%"}} aria-label={item.text}
-          onClick={item.onClick}
-        >
-          {item.text}
-        </Button>
-    </ListItem>
-  );
-
+  const makeButton = (text, onClick) => <Button
+    key={text}
+    variant="contained" aria-label={text}
+    onClick={onClick}
+  >
+    {text}
+  </Button>
   return (
-    <React.Fragment>
-      <List aria-label="menu">
-        {listItems}
-      </List>
+    <main>
+      <SessionTable />
+      <div className={classes.actionGroup}>
+        {makeButton("Create Room", props.onCreate)}
+        {makeButton("Join Room", ()=>{setJoinDialogOpen(true);})}
+        {makeButton("Practice", ()=>{ history.push("/othello/practice"); })}
+      </div>
       <TextEntryDialog
         open={joinDialogOpen}
         text="Enter room name"
@@ -77,7 +78,7 @@ function TitleScreen(props) {
           <InfoIcon color="primary"/>
         </IconButton>
       </div>
-    </React.Fragment>
+    </main>
   );
 }
 
