@@ -169,15 +169,19 @@ const onMakeMove = (io, socket, roomID, position)=>
         // don't update the player, when they have no available moves
         // (they have to pass)
         sessionData[roomID].activePlayer = opponent;
+        sessionData[roomID].status = "active";
+      }
+      else
+      {
+        // don't update player, but check whether we should end the game
+        const gameOver = !OthelloRules.playerCanPlay(
+          updatedBoard,
+          sessionData[roomID].activePlayer
+        );
+        sessionData[roomID].status = gameOver ? "complete" : "active";
+        sessionData[roomID].activePlayer = gameOver ? null : sessionData[roomID].activePlayer;
       }
       sessionData[roomID].board = updatedBoard;
-
-      const gameOver = 64 === OthelloRules.countCellsForRole(
-        updatedBoard,
-        OthelloRules.labels.empty
-      );
-
-      sessionData[roomID].status = gameOver ? "complete" : "active";
     }
 
     refreshClientState(io, roomID);

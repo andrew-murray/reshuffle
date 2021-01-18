@@ -159,4 +159,192 @@ describe('basic othello example', () => {
       return config.disconnectAll(system.io, sockets);
     });
   });
+  test('othello.complete.typical',  () => {
+    const roomID = expect.getState().currentTestName;
+    return createRoomWithTwoPlayers(roomID).then((sockets)=>{
+      // forget any events up until now
+      sockets[0].eventHistory = [];
+      sockets[1].eventHistory = [];
+
+      // define current game state to be bugged case found through player
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      // the below is an unreachable game state with two moves remaining
+      sessionData[roomID].board = [
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,w,e,b,b,w,b,e],
+      ];
+      sessionData[roomID].activePlayer = OthelloRules.labels.white;
+      sessionData[roomID].status = "active";
+
+      // white's turn
+      sockets[1].emit("othello.move", {position: [7,7]});
+      return Promise.resolve(config.awaitConditionOnSockets(
+        sockets,
+        (socket)=>{return socket.eventHistory.length === 1;}
+      ));
+    }).then(sockets=>{
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      const boardState = [
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,w,e,b,b,w,w,w]
+      ];
+
+      expect(sockets[0].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[0].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.black);
+      expect(sockets[0].eventHistory[0].arguments[0].status).toBe("active");
+      expect(sockets[0].eventHistory[0].arguments[0].activePlayer).toBe(OthelloRules.labels.black);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[0].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      expect(sockets[1].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[1].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.white);
+      expect(sockets[1].eventHistory[0].arguments[0].status).toBe("active");
+      expect(sockets[1].eventHistory[0].arguments[0].activePlayer).toBe(OthelloRules.labels.black);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[1].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      // black's turn
+      sockets[0].eventHistory = [];
+      sockets[1].eventHistory = [];
+      sockets[0].emit("othello.move", {position: [7,2]});
+
+      return Promise.resolve(config.awaitConditionOnSockets(
+        sockets,
+        (socket)=>{return socket.eventHistory.length === 1;}
+      ));
+    }).then(sockets=>{
+
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      const boardState = [
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,b,b,b],
+        [b,b,b,b,b,w,w,w]
+      ];
+
+      expect(sockets[0].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[0].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.black);
+      expect(sockets[0].eventHistory[0].arguments[0].status).toBe("complete");
+      expect(sockets[0].eventHistory[0].arguments[0].activePlayer).toBe(null);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[0].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      expect(sockets[1].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[1].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.white);
+      expect(sockets[1].eventHistory[0].arguments[0].status).toBe("complete");
+      expect(sockets[1].eventHistory[0].arguments[0].activePlayer).toBe(null);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[1].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      return sockets;
+    }).then(sockets=>{
+      return config.disconnectAll(system.io, sockets);
+    });
+  });
+  test('othello.complete.unconventional',  () => {
+    const roomID = expect.getState().currentTestName;
+    return createRoomWithTwoPlayers(roomID).then((sockets)=>{
+      // forget any events up until now
+      sockets[0].eventHistory = [];
+      sockets[1].eventHistory = [];
+
+      // define current game state to be bugged case found through player
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      // the below is an unreachable game state with one black move remaining
+      sessionData[roomID].board = [
+        [e,e,e,e,e,e,e,e],
+        [e,e,b,e,e,e,e,e],
+        [e,b,w,e,e,e,e,e],
+        [e,e,b,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,e,e,e]
+      ];
+      sessionData[roomID].activePlayer = OthelloRules.labels.black;
+      sessionData[roomID].status = "active";
+
+      // black's turn
+      sockets[0].emit("othello.move", {position: [2,3]});
+      return Promise.resolve(config.awaitConditionOnSockets(
+        sockets,
+        (socket)=>{return socket.eventHistory.length === 1;}
+      ));
+    }).then(sockets=>{
+
+      const e = OthelloRules.labels.empty;
+      const w = OthelloRules.labels.white;
+      const b = OthelloRules.labels.black;
+      const boardState = [
+        [e,e,e,e,e,e,e,e],
+        [e,e,b,e,e,e,e,e],
+        [e,b,b,b,e,e,e,e],
+        [e,e,b,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,w,e,e],
+        [e,e,e,e,e,e,e,e]
+      ];
+
+      expect(sockets[0].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[0].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.black);
+      expect(sockets[0].eventHistory[0].arguments[0].status).toBe("complete");
+      expect(sockets[0].eventHistory[0].arguments[0].activePlayer).toBe(null);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[0].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      expect(sockets[1].eventHistory[0].event).toBe("othello.update");
+      expect(sockets[1].eventHistory[0].arguments[0].role).toBe(OthelloRules.labels.white);
+      expect(sockets[1].eventHistory[0].arguments[0].status).toBe("complete");
+      expect(sockets[1].eventHistory[0].arguments[0].activePlayer).toBe(null);
+
+      expect(OthelloRules.boardsEqual(
+        sockets[1].eventHistory[0].arguments[0].board,
+        boardState
+      )).toBeTruthy();
+
+      return sockets;
+    }).then(sockets=>{
+      return config.disconnectAll(system.io, sockets);
+    });
+  });
 });
