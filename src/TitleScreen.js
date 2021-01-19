@@ -45,11 +45,18 @@ class TitleScreen extends React.Component
   {
     socket.on("othello.rooms.list", this.updateRoomData);
     socket.emit("othello.rooms.request");
+    this.interval = setInterval(
+      ()=>{socket.emit("othello.rooms.request");},
+      5000
+    );
   }
 
   componentWillUnmount()
   {
     socket.off("othello.rooms.list", this.updateRoomData);
+    clearInterval(
+      this.interval
+    );
   }
 
   render()
