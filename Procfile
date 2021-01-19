@@ -1,1 +1,1 @@
-web: npm install --prefix ./src/discard && npm start --prefix ./src/discard
+web: yarn install --cwd ./src/discard && yarn start --cwd ./src/discard
