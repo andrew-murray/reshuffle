@@ -213,6 +213,23 @@ const onDisconnect = (io, socket, roomID) =>
 };
 
 const subscribe = (io, socket)=>{
+  socket.on('othello.rooms.request', (request)=>{
+    let relevant = [];
+    const MAX_LENGTH = 10;
+    for( const roomID of Object.keys(sessionData) )
+    {
+      let room = sessionData[roomID];
+      // todo: pagination based on request.start
+      // todo: filter by player count
+      relevant.push({
+        name: roomID,
+        playerCount: room.totalPlayers,
+        observerCount: room.totalObservers
+      });
+      if(relevant.length === MAX_LENGTH){ break; }
+    }
+    socket.emit("othello.rooms.list", {rooms: relevant});
+  });
   socket.on('othello.join', function(roomID){
     debugEvent("received othello.join for " + roomID);
     // todo: just want to get to the point where we can receive
