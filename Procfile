@@ -1,1 +1,1 @@
-web: yarn install --cwd ./src/discard && yarn start --cwd ./src/discard
+web: yarn --cwd=./src/discard install && yarn --cwd=./src/discard start 
