@@ -1,22 +1,23 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import TextEntryDialog from "./TextEntryDialog";
 import TitledDialog from "./TitledDialog";
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import socket from "./socket";
 
 import SessionTable from "./SessionTable";
 
-const useStyles = makeStyles((theme) => ({
+const styler = (theme) => ({
   actionGroup: {
     '& > *': {
       margin: theme.spacing(1),
     },
   },
-}));
+});
 
 const infoStyles = {
   position:"absolute",
@@ -24,67 +25,94 @@ const infoStyles = {
   right: 0
 };
 
-function TitleScreen(props) {
-  const classes = useStyles();
+class TitleScreen extends React.Component
+{
 
-  const history = useHistory();
+  state = {
+    rooms: [],
+    joinDialogOpen: false,
+    infoDialogOpen: false
+  }
 
-  let [joinDialogOpen, setJoinDialogOpen] = React.useState(false);
-  let [infoDialogOpen, setInfoDialogOpen] = React.useState(false);
+  constructor(props)
+  {
+    super(props);
+    this.updateRoomData = (roomData)=>{this.setState({rooms: roomData.rooms});};
+  }
 
-  const makeButton = (text, onClick) => <Button
-    key={text}
-    variant="contained" aria-label={text}
-    onClick={onClick}
-  >
-    {text}
-  </Button>
 
-  const joinRoom = (roomName)=>{
-    if(roomName)
+  componentDidMount()
+  {
+    socket.on("othello.rooms.list", this.updateRoomData);
+    socket.emit("othello.rooms.request");
+  }
+
+  componentWillUnmount()
+  {
+    socket.off("othello.rooms.list", this.updateRoomData);
+  }
+
+  render()
+  {
+    const classes = this.props.classes;
+    const history = this.props.history;
+
+    const makeButton = (text, onClick) => <Button
+      key={text}
+      variant="contained" aria-label={text}
+      onClick={onClick}
+    >
+      {text}
+    </Button>
+
+    const joinRoom = (roomName) =>
     {
-      history.push("/othello/room/" + roomName);
-      if(joinDialogOpen){setJoinDialogOpen(false);}
-    }
-  };
+      if(roomName)
+      {
+        history.push("/othello/room/" + roomName);
+        if(this.state.joinDialogOpen){this.setState({joinDialogOpen: false});}
+      }
+    };
 
-  return (
-    <main>
-      <SessionTable
-        onJoin={joinRoom}
+    return (
+      <main>
+        <SessionTable
+          onJoin={joinRoom}
+          rooms={this.state.rooms}
+          />
+        <div className={classes.actionGroup}>
+          {makeButton("Create Room", this.props.onCreate)}
+          {makeButton("Find Room", ()=>{this.setState( {joinDialogOpen: true} );})}
+          {makeButton("Practice", ()=>{ history.push("/othello/practice"); })}
+        </div>
+        <TextEntryDialog
+          open={this.state.joinDialogOpen}
+          text="Enter room name"
+          onConfirm={joinRoom}
+          onCancel={()=>{this.setState( {joinDialogOpen: false} );}}
         />
-      <div className={classes.actionGroup}>
-        {makeButton("Create Room", props.onCreate)}
-        {makeButton("Find Room", ()=>{setJoinDialogOpen(true);})}
-        {makeButton("Practice", ()=>{ history.push("/othello/practice"); })}
-      </div>
-      <TextEntryDialog
-        open={joinDialogOpen}
-        text="Enter room name"
-        onConfirm={joinRoom}
-        onCancel={()=>{setJoinDialogOpen(false);}}
-      />
-      <TitledDialog
-        open={infoDialogOpen}
-        title="Attributions"
-        onClose={()=>{setInfoDialogOpen(false)}}
-      >
-        <Typography>
-          reshuffle uses sounds from <Link
-            to={{ pathname: "https://www.zapsplat.com/" }}
-            target="_blank"
-           >
-            zapsplat
-          </Link>
-        </Typography>
-      </TitledDialog>
-      <div style={infoStyles}>
-        <IconButton onClick={()=>{setInfoDialogOpen(true)}}>
-          <InfoIcon color="primary"/>
-        </IconButton>
-      </div>
-    </main>
-  );
+        <TitledDialog
+          open={this.state.infoDialogOpen}
+          title="Attributions"
+          onClose={()=>{this.setState( {infoDialogOpen: false} );}}
+        >
+          <Typography>
+            reshuffle uses sounds from <Link
+              to={{ pathname: "https://www.zapsplat.com/" }}
+              target="_blank"
+             >
+              zapsplat
+            </Link>
+          </Typography>
+        </TitledDialog>
+        <div style={infoStyles}>
+          <IconButton onClick={()=>{this.setState( {infoDialogOpen: true} );}}>
+            <InfoIcon color="primary"/>
+          </IconButton>
+        </div>
+      </main>
+    );
+  }
 }
 
-export default TitleScreen;
+export default withStyles(styler)(TitleScreen);

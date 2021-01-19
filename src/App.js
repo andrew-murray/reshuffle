@@ -229,11 +229,12 @@ function App() {
   );
 
   React.useEffect(()=>{
-    socket.on("room.created", (roomID)=>
+    const onRoomCreated = (roomID) =>
     {
       history.push("othello/room/" + roomID);
-    })
-    return ()=>{socket.off("room.created");}
+    };
+    socket.on("room.created", onRoomCreated)
+    return ()=>{socket.off("room.created", onRoomCreated);}
   });
 
   return (
@@ -241,11 +242,16 @@ function App() {
       <CssBaseline/>
         <div className="App">
           <Switch>
-            <Route exact path="/">
-              <TitleScreen
-                onCreate={()=>{socket.emit("chat.create");}}
-              />
-            </Route>
+            <Route
+              exact path="/"
+              component={(props)=>
+                <TitleScreen
+                  onCreate={()=>{socket.emit("chat.create");}}
+                  match={props.match}
+                  history={props.history}
+                />
+              }
+            />
             <Route exact path="/othello/practice">
               <OfflineOthelloGame />
             </Route>
