@@ -35,6 +35,8 @@ const useStyles = makeStyles({
 
 export default function SessionTable(props) {
   const classes = useStyles();
+  // the only weird behaviour in the below,
+  // is we ensure the table "non-empty" ish, when provided an empty list of rows
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
@@ -47,7 +49,7 @@ export default function SessionTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.rooms.map((row) => (
+          {(props.rooms.length == 0 ? [{}] : props.rooms).map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
                 {row.name}
@@ -55,7 +57,7 @@ export default function SessionTable(props) {
               <StyledTableCell align="right">{row.playerCount}</StyledTableCell>
               <StyledTableCell align="right">{row.observerCount}</StyledTableCell>
               <StyledTableCell align="right">
-                <Button variant="contained" onClick={()=>props.onJoin(row.name)}>Join</Button>
+                {row.name && <Button variant="contained" onClick={()=>props.onJoin(row.name)}>Join</Button>}
               </StyledTableCell>
             </StyledTableRow>
           ))}
