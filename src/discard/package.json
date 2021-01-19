@@ -6,11 +6,9 @@
   "dependencies": {
     "circular-buffer": "^1.0.3",
     "debug": "^4.3.1",
-    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "human-id": "^2.0.1",
-    "socket.io": "^3.0.3",
-    "socket.io-client": "^3.0.5"
+    "socket.io": "^3.0.3"
   },
   "scripts": {
     "start": "node index.js",
@@ -23,7 +21,8 @@
   },
   "devDependencies": {
     "jest": "^26.6.3",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "socket.io-client": "^3.0.5"
   },
   "jest": {
     "testEnvironment": "node",
