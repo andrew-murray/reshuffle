@@ -43,4 +43,4 @@ class OfflineOthelloGame extends Component
 }
 
 
-export {OfflineOthelloGame};
+export default OfflineOthelloGame;
