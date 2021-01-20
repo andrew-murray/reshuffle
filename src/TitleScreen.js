@@ -77,10 +77,11 @@ class TitleScreen extends React.Component
     const classes = this.props.classes;
     const history = this.props.history;
 
-    const makeButton = (text, onClick) => <Button
+    const makeButton = (text, disabled, onClick) => <Button
       key={text}
       variant="contained" aria-label={text}
       onClick={onClick}
+      disabled={disabled}
     >
       {text}
     </Button>
@@ -100,13 +101,11 @@ class TitleScreen extends React.Component
           onJoin={joinRoom}
           rooms={this.state.rooms}
           />
-        {this.state.connectedToServer &&
-          <div className={classes.actionGroup}>
-            {makeButton("Create Room", this.props.onCreate)}
-            {makeButton("Find Room", ()=>{this.setState( {joinDialogOpen: true} );})}
-            {makeButton("Practice", ()=>{ history.push("/othello/practice"); })}
-          </div>
-        }
+        <div className={classes.actionGroup}>
+          {makeButton("Create Room", !this.state.connectedToServer, this.props.onCreate)}
+          {makeButton("Find Room", !this.state.connectedToServer, ()=>{this.setState( {joinDialogOpen: true} );})}
+          {makeButton("Practice", false, ()=>{ history.push("/othello/practice"); })}
+        </div>
         {!this.state.connectedToServer &&
           <div style={{width:"100%", display: "flex", justifyContent: "center", paddingTop: "1vh"}}>
             <Card style={{maxWidth: 350}}>
