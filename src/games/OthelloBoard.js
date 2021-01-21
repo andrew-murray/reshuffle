@@ -35,7 +35,7 @@ class OthelloCell extends React.Component{
     const hoverColor = hoverColorForCellState(this.props.gameState, this.props.possible);
     const defaultColor = defaultColorForCellState(this.props.gameState);
     const hoverIsDifferent = hoverColor !== defaultColor;
-    
+
     return(
       <React.Fragment>
         <Rect
@@ -116,7 +116,7 @@ class OthelloBoard extends Component {
       const yStart = y * cellHeight;
       const xStart = x * cellWidth;
       const movePossible = moveIsPossible(cellState, [y,x]);
-      const highlightCell = this.props.highlightCell && this.props.highlightCell[0] == y && this.props.highlightCell[1] == x;
+      const highlightCell = this.props.highlightCell && this.props.highlightCell[0] === y && this.props.highlightCell[1] === x;
       const clickHandler = movePossible ? (event)=>{makeMove(y,x,true)} : undefined;
       return (
         <OthelloCell
