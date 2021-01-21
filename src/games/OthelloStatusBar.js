@@ -3,8 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import OthelloRules from "./OthelloRules";
 import Chip from '@material-ui/core/Chip';
 import CircleIcon from '@material-ui/icons/FiberManualRecord';
-import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
 
 const useStyles = makeStyles((theme) => ({
   root: {

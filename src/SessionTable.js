@@ -49,7 +49,7 @@ export default function SessionTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(props.rooms.length == 0 ? [{}] : props.rooms).map((row) => (
+          {(props.rooms.length === 0 ? [{}] : props.rooms).map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
                 {row.name}
