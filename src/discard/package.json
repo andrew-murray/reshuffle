@@ -1,6 +1,7 @@
 {
   "name": "discard",
   "version": "0.0.1",
+  "license": "MIT",
   "description": "discard - room-based game/chat backend",
   "repository": "https://github.com/andrew-murray/discard.git",
   "dependencies": {

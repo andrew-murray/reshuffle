@@ -1,6 +1,7 @@
 {
   "name": "reshuffle",
   "version": "0.1.0",
+  "license": "MIT",
   "homepage": "http://andrew-murray.github.io/reshuffle",
   "private": true,
   "dependencies": {
