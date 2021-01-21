@@ -16,7 +16,8 @@ const dataForPlayer = (data, playerID) =>
     board: data.board,
     activePlayer: data.activePlayer,
     status: data.status,
-    role: data.players.get(playerID)
+    role: data.players.get(playerID),
+    lastMove: data.moves.length === 0 ? undefined : data.moves[data.moves.length - 1]
   };
 }
 
@@ -55,7 +56,8 @@ const onConnect = (io, socket, roomID) =>
       board: OthelloRules.createInitialBoardState(),
       activePlayer: null,
       players: new Map( [[socket.id, OthelloRules.labels.black]] ),
-      status: "new"
+      status: "new",
+      moves: []
     };
   }
   else if(sessionData[roomID]
@@ -102,7 +104,7 @@ const countObservers = (players) =>
   let observerCount = 0;
   for( let playerKind of players.values() )
   {
-      observerCount += playerKind === null;
+    observerCount += playerKind === null;
   }
   return observerCount;
 };
@@ -117,6 +119,7 @@ const restartGame = (io, socket, roomID) =>
     sessionData[roomID].activePlayer = sessionData[roomID].totalPlayers == 2 ? OthelloRules.labels.black : null;
     // status is an object, when conceded (see below)
     sessionData[roomID].status = "new";
+    sessionData[roomID].moves = [];
   }
   refreshClientState(io, roomID);
 };
@@ -171,6 +174,7 @@ const onMakeMove = (io, socket, roomID, position)=>
         sessionData[roomID].activePlayer
       );
       const opponent = OthelloRules.opponentForPlayer(sessionData[roomID].activePlayer);
+      sessionData[roomID].moves.push({position: position, player: sessionData[roomID].activePlayer});
       if(OthelloRules.playerCanPlay(updatedBoard, opponent))
       {
         // don't update the player, when they have no available moves
