@@ -17,10 +17,11 @@ class OthelloCell extends React.Component{
       this.setState({hovered: false});
     };
 
+    const boardColor = "#b87340";
     const defaultColorForCellState = (cellState) => {
       return cellState === OthelloRules.labels.white ? "white"
            : cellState === OthelloRules.labels.black ? "black"
-                                                     : "#b87340";
+                                                     : boardColor;
     };
 
     const hoverColorForCellState = (cellState, possible) => {
@@ -34,7 +35,7 @@ class OthelloCell extends React.Component{
     const hoverColor = hoverColorForCellState(this.props.gameState, this.props.possible);
     const defaultColor = defaultColorForCellState(this.props.gameState);
     const hoverIsDifferent = hoverColor !== defaultColor;
-
+    
     return(
       <React.Fragment>
         <Rect
@@ -43,7 +44,7 @@ class OthelloCell extends React.Component{
           width={this.props.width}
           height={this.props.height}
 
-          fill={"#b87340"}
+          fill={this.props.highlight ? "#83ce7a" :"#b87340"}
           shadowBlur={5}
 
           onClick={this.props.onClick}
@@ -59,6 +60,7 @@ class OthelloCell extends React.Component{
           width={this.props.width * 0.85}
           height={this.props.height * 0.85}
 
+          shadowBlur={defaultColor !== boardColor ? 1: undefined}
           fill={this.state.hovered ? hoverColor: defaultColor}
           opacity={(hoverIsDifferent && this.state.hovered) ? 0.5 : undefined }
 
@@ -114,6 +116,7 @@ class OthelloBoard extends Component {
       const yStart = y * cellHeight;
       const xStart = x * cellWidth;
       const movePossible = moveIsPossible(cellState, [y,x]);
+      const highlightCell = this.props.highlightCell && this.props.highlightCell[0] == y && this.props.highlightCell[1] == x;
       const clickHandler = movePossible ? (event)=>{makeMove(y,x,true)} : undefined;
       return (
         <OthelloCell
@@ -127,6 +130,7 @@ class OthelloBoard extends Component {
           gameState={cellState}
           possible={movePossible}
           onClick={clickHandler}
+          highlight={highlightCell}
         />
       );
     };

@@ -35,7 +35,8 @@ class OthelloWithChat extends React.Component
     status: null,
     joinedRoom: null,
     windowWidth: 0,
-    windowHeight: 0
+    windowHeight: 0,
+    lastMove: null
   }
   constructor(props)
   {
@@ -92,7 +93,8 @@ class OthelloWithChat extends React.Component
             board: othelloState.board,
             activePlayer: othelloState.activePlayer,
             role: othelloState.role,
-            status: othelloState.status
+            status: othelloState.status,
+            lastMove: othelloState.lastMove
           };
         }
         else
@@ -167,6 +169,7 @@ class OthelloWithChat extends React.Component
             game={this.state.board === null ? OthelloRules.createEmptyBoardState(8,8) : this.state.board}
             // provide a player, OthelloBoard requires one for now
             showMovesForPlayer={canMakeMoves}
+            highlightCell={this.state.lastMove ? this.state.lastMove.position : undefined}
             onMove={(action)=>{
               if(action.position)
               {
