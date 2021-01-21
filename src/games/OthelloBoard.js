@@ -35,7 +35,39 @@ class OthelloCell extends React.Component{
     const hoverColor = hoverColorForCellState(this.props.gameState, this.props.possible);
     const defaultColor = defaultColorForCellState(this.props.gameState);
     const hoverIsDifferent = hoverColor !== defaultColor;
-    
+
+    const lightPosition = 0;
+
+    // let's presume light-position at board position 0,0 at height 800
+    // with flat counters, the center of the specular highlight is where?
+    // presume spherical counters?
+
+    // draw a line from the cell center to the point and cut it off at "circle"-"radius"
+    const gradientStartPositionForCell = (y,x, cellHeight, cellWidth, radius)=>
+    {
+      const counterCenterBoardSpace = { x: (x * cellWidth) + cellWidth/2, y: (y * cellHeight) + cellHeight/2, z: 0};
+      const lightPositionBoardSpace = {x: 4 * cellWidth, y: 4 * cellHeight, z: 200};
+      const directionToLight = {
+        x: lightPositionBoardSpace.x - counterCenterBoardSpace.x,
+        y: lightPositionBoardSpace.y - counterCenterBoardSpace.y,
+        z: lightPositionBoardSpace.z - counterCenterBoardSpace.z
+      };
+      const dirToLightSq = Math.sqrt(directionToLight.x * directionToLight.x
+      + directionToLight.y * directionToLight.y
+      + directionToLight.z * directionToLight.z);
+      // note: that this is a direction! We can just use it in "counterSpace"
+      const normalisedDir = {
+        x: directionToLight.x / dirToLightSq,
+        y: directionToLight.y / dirToLightSq,
+        z: directionToLight.z / dirToLightSq
+      };
+      const pos = { x: normalisedDir.x * radius, y : normalisedDir.y * radius};
+      return pos;
+
+    };
+
+    // fillRadialGradientStartPoint={{x: -this.props.width *0.5/2, y: -this.props.height*0.5/2}}
+
     return(
       <React.Fragment>
         <Rect
@@ -61,8 +93,15 @@ class OthelloCell extends React.Component{
           height={this.props.height * 0.85}
 
           shadowBlur={defaultColor !== boardColor ? 1: undefined}
-          fill={this.state.hovered ? hoverColor: defaultColor}
+
+          fillRadialGradientStartPoint={gradientStartPositionForCell(this.props.y, this.props.x, this.props.height, this.props.width, this.props.width/4)}
+          fillRadialGradientStartRadius={0}
+          fillRadialGradientEndRadius={this.props.width}
+          fillRadialGradientColorStops={defaultColor == "white" ? [0,"#ffffff", 1, "#bbbbbb"]
+                                      : defaultColor == "black" ? [0,"#555555", 0.3, "#101010"]
+                                      : undefined}
           opacity={(hoverIsDifferent && this.state.hovered) ? 0.5 : undefined }
+
 
           onClick={this.props.onClick}
           onTap={this.props.onClick}
