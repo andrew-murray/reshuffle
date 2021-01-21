@@ -148,7 +148,11 @@ class OthelloWithChat extends React.Component
 
     const gameIsActive = this.state.status === "active";
     const canMakeMoves = this.state.role === this.state.activePlayer ? this.state.role: null;
-    const styleForGame = this.state.activePlayer === null ? {opacity: "50%"} : undefined;
+    const gameDefaults = {display: "flex", justifyContent: "center"};
+    const styleForGame = Object.assign(
+      this.state.activePlayer === null ? {opacity: "50%"} : {},
+      gameDefaults
+    );
 
     // default board to be only as big as 85% of the screen's width
     // we have additional content to fit vertically, so leave some extra wiggle room
