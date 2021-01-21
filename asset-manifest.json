@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/reshuffle/static/css/main.dbfeab1e.chunk.css",
-    "main.js": "/reshuffle/static/js/main.c88e7945.chunk.js",
-    "main.js.map": "/reshuffle/static/js/main.c88e7945.chunk.js.map",
+    "main.js": "/reshuffle/static/js/main.b9a48d03.chunk.js",
+    "main.js.map": "/reshuffle/static/js/main.b9a48d03.chunk.js.map",
     "runtime-main.js": "/reshuffle/static/js/runtime-main.3f5114cd.js",
     "runtime-main.js.map": "/reshuffle/static/js/runtime-main.3f5114cd.js.map",
     "static/js/2.c6d4282b.chunk.js": "/reshuffle/static/js/2.c6d4282b.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.3f5114cd.js",
     "static/js/2.c6d4282b.chunk.js",
     "static/css/main.dbfeab1e.chunk.css",
-    "static/js/main.c88e7945.chunk.js"
+    "static/js/main.b9a48d03.chunk.js"
   ]
 }
