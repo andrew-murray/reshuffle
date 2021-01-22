@@ -37,7 +37,7 @@ const updatePlayerCountsAndCommunicate = (io, roomID) =>
   const obString = observerCount.toString() + " observer" + (observerCount !== 1 ? "s" : "");
   const playerMessage = "There " + (playerCount !== 1 ? "are " : "is ")
     + playerString + " and " + obString + " present.";
-  io.to(roomID).emit("chat.message", playerMessage);
+  io.to(roomID).emit("othello.status", playerMessage);
   sessionData[roomID].totalPlayers = playerCount;
   sessionData[roomID].totalObservers = observerCount;
 };
@@ -145,7 +145,7 @@ const concedeGame = (io, socket, roomID) =>
   }
   if(msg)
   {
-    io.to(roomID).emit("chat.message", msg);
+    io.to(roomID).emit("othello.status", msg);
   }
   refreshClientState(io, roomID);
 };
@@ -216,7 +216,7 @@ const onDisconnect = (io, socket, roomID) =>
   }
 };
 
-const subscribe = (io, socket)=>{
+const subscribe = (io, socket, options)=>{
   socket.on('othello.rooms.request', (request)=>{
     let relevant = [];
     const MAX_LENGTH = 10;

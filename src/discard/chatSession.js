@@ -18,10 +18,22 @@ function getChatHistory(roomID)
   return null;
 }
 
-function emitChatMessage(io, roomID, msg)
+function constructMessageToSend(roomID, data)
 {
-  io.to(roomID).emit('chat.message', msg);
-  sessionData[roomID].history.push(msg);
+  return {
+    sender: {name: sessionData[roomID].names[data.senderID]},
+    message: data.message
+  };
+}
+
+function emitChatMessage(io, roomID, socket, msg)
+{
+  const messageToStore = {senderID: socket.id, message: msg};
+  sessionData[roomID].history.push(messageToStore);
+  io.to(roomID).emit(
+    'chat.receive',
+    constructMessageToSend(roomID, messageToStore)
+  );
 }
 
 function createChatIfNecessary(roomID)
@@ -55,11 +67,11 @@ function joinChatRoom(io, socket, roomID, name)
     deleteChatIfNecessary(io, roomID);
   });
 
-  socket.on('chat.message', msg => {emitChatMessage(io, roomID, msg);});
+  socket.on('chat.send', msg => {emitChatMessage(io, roomID, socket.id, msg);});
 
   for(msg of existingMessages)
   {
-    socket.emit('chat.message', msg);
+    socket.emit('chat.receive', constructMessageToSend(msg));
   }
 }
 

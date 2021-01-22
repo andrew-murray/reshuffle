@@ -25,7 +25,7 @@ class ChatDrawer extends React.Component
     {
       const messageItems = [...Array(this.props.messages.length).keys()].map(messageIndex=>
         <ListItem key={"message-" + messageIndex.toString()}>
-          <ListItemText primary={this.props.messages[messageIndex]}>
+          <ListItemText primary={this.props.messages[messageIndex].message}>
           </ListItemText>
         </ListItem>
       );

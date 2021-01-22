@@ -65,9 +65,14 @@ class OthelloWithChat extends React.Component
   componentDidMount() {
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
-    socket.on('chat.message', (msg)=>{
+    socket.on('chat.receive', (data)=>{
       this.setState( (state, props) => {
-          return {messages: state.messages.concat(msg)};
+          return {messages: state.messages.concat(data)};
+      });
+    });
+    socket.on('othello.status', (data)=>{
+      this.setState( (state, props) => {
+        return {messages: state.messages.concat({isStatus: true, message: data})}
       });
     });
     socket.on('othello.update', (othelloState)=>{
@@ -105,7 +110,7 @@ class OthelloWithChat extends React.Component
   componentWillUnmount()
   {
     window.removeEventListener('resize', this.updateWindowDimensions);
-    socket.off('chat.message');
+    socket.off('chat.receive');
     socket.off('othello.update');
   }
 
@@ -188,7 +193,7 @@ class OthelloWithChat extends React.Component
         </main>
         <ChatDrawer
           messages={this.state.messages}
-          onSend={(msg)=>{socket.emit("chat.message", msg);}}
+          onSend={(msg)=>{socket.emit("chat.send", msg);}}
           style={{width: Math.min(300, this.state.windowWidth * 0.75)}}
         />
         <TextEntryDialog
