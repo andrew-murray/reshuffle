@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import TextEntryDialog from "../TextEntryDialog"
 import socket from "../socket"
 
 const othelloStyles = (theme) => { return {
@@ -46,18 +47,15 @@ class OthelloWithChat extends React.Component
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
-  connectToRoom(roomID)
+  connectToRoom(roomID, name)
   {
-    if((this.state.joinedRoom !== roomID))
-    {
-      this.setState(
-        { joinedRoom: roomID },
-        () => {
-          socket.emit('chat.join', roomID);
-          socket.emit("othello.join", roomID);
-        }
-      );
-    }
+    this.setState(
+      { joinedRoom: roomID },
+      () => {
+        socket.emit('chat.join', roomID, name);
+        socket.emit("othello.join", roomID);
+      }
+    );
   }
 
   updateWindowDimensions() {
@@ -65,7 +63,6 @@ class OthelloWithChat extends React.Component
   }
 
   componentDidMount() {
-    this.connectToRoom(this.props.roomID);
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
     socket.on('chat.message', (msg)=>{
@@ -103,11 +100,6 @@ class OthelloWithChat extends React.Component
         }
       })
     });
-  }
-
-  componentDidUpdate()
-  {
-    this.connectToRoom(this.props.roomID);
   }
 
   componentWillUnmount()
@@ -190,13 +182,21 @@ class OthelloWithChat extends React.Component
               <Button variant="contained" onClick={sendReset} disabled={gameIsActive} color="primary"> Reset </Button>
               <Button variant="contained" onClick={sendConcede} disabled={!gameIsActive} color="primary"> Concede </Button>
             </div>
-            : <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
+            : this.state.joinedRoom && <Paper style={{padding: "1vh"}}><Typography>You are observing.</Typography></Paper>
+
           }
         </main>
         <ChatDrawer
           messages={this.state.messages}
           onSend={(msg)=>{socket.emit("chat.message", msg);}}
           style={{width: Math.min(300, this.state.windowWidth * 0.75)}}
+        />
+        <TextEntryDialog
+          open={this.state.joinedRoom === null}
+          text="Choose a name"
+          onConfirm={(value)=>{
+            if(value){this.connectToRoom(this.props.roomID, value);}
+          }}
         />
       </div>
     );

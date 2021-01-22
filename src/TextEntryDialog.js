@@ -43,9 +43,11 @@ function TextEntryDialog(props) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onCancel} variant="contained">
-          Cancel
-        </Button>
+        {props.onCancel &&
+          <Button onClick={props.onCancel} variant="contained">
+            Cancel
+          </Button>
+        }
         <Button onClick={confirmAndReset} variant="contained">
           Confirm
         </Button>
