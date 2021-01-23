@@ -1,27 +1,12 @@
 const CircularBuffer = require("circular-buffer");
 const rooms = require("./rooms");
 const debug = require("debug")("chat");
-const crypto = require("crypto");
 
 let sessionData = {};
 
 function initialiseStorage(storage)
 {
   sessionData = storage;
-}
-
-function generateClientID(collisions)
-{
-  let clientID = crypto.randomBytes(16).toString("hex");
-  if(collisions)
-  {
-    const collisionSet = new Set(collisions);
-    while(collisionSet.has(clientID))
-    {
-      clientID = crypto.randomBytes(16).toString("hex");
-    }
-  }
-  return clientID;
 }
 
 function getChatHistory(roomID)
@@ -78,7 +63,7 @@ function joinChatRoom(io, socket, roomID, name)
   createChatIfNecessary(roomID);
 
   const senders = Array.from(sessionData[roomID].senders.values());
-  const clientID = generateClientID(senders.map(sender=>sender.id));
+  const clientID = rooms.generateStrongID(senders.map(sender=>sender.id));
   sessionData[roomID].senders.set(socket.id, {
     id: clientID,
     name: name
