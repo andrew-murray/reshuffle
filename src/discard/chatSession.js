@@ -63,7 +63,13 @@ function joinChatRoom(io, socket, roomID, name)
   createChatIfNecessary(roomID);
 
   const senders = Array.from(sessionData[roomID].senders.values());
+  // returns null on failure
   const clientID = rooms.generateStrongID(senders.map(sender=>sender.id));
+  if(!clientID)
+  {
+    console.log("Failed to generate clientID");
+    return;
+  }
   sessionData[roomID].senders.set(socket.id, {
     id: clientID,
     name: name

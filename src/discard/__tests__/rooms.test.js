@@ -19,7 +19,7 @@ describe('strongIDs', () => {
     expect(rooms.generateStrongID(["pear", "apple"])).toBe("orange");
     expect(rooms.generateStrongID(["pear", "pears", "OJ", "orange"])).toBe("apple");
 
-    expect(()=>{rooms.generateStrongID(fruit)}).toThrowError(/MAX\_FAILURES/);
+    expect(()=>{rooms.generateStrongID(fruit)}).toBe(null);
     revert();
   })
 })

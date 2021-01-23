@@ -46,7 +46,7 @@ function generateStrongID(collisions)
       failures++;
       if(failures === MAX_FAILURES)
       {
-        throw new Error("generateStrongID produced ids in the collision set until it reached its MAX_FAILURES.");
+        return null;
       }
     }
   }
