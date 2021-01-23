@@ -70,9 +70,9 @@ class OthelloWithChat extends React.Component
           return {messages: state.messages.concat(data)};
       });
     });
-    socket.on('othello.status', (data)=>{
+    socket.on('othello.status', (text)=>{
       this.setState( (state, props) => {
-        return {messages: state.messages.concat({isStatus: true, message: data})}
+        return {messages: state.messages.concat({isStatus: true, text: text})}
       });
     });
     socket.on('othello.update', (othelloState)=>{

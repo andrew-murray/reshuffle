@@ -9,6 +9,28 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Device from "./Device";
+import Typography from '@material-ui/core/Typography';
+
+const collapseMessages = (messages)=>{
+  let outputMessages = [];
+  for(const message of messages)
+  {
+    if(outputMessages.length
+      && message.sender
+      && outputMessages[outputMessages.length-1].sender
+      && outputMessages[outputMessages.length-1].sender.id === message.sender.id)
+    {
+      outputMessages[outputMessages.length-1].text.push(message.text);
+    }
+    else
+    {
+      let m = Object.assign({}, message);
+      m.text = [ message.text];
+      outputMessages.push(m);
+    }
+  }
+  return outputMessages;
+};
 
 class ChatDrawer extends React.Component
 {
@@ -23,12 +45,26 @@ class ChatDrawer extends React.Component
 
     render()
     {
-      const messageItems = [...Array(this.props.messages.length).keys()].map(messageIndex=>
-        <ListItem key={"message-" + messageIndex.toString()}>
-          <ListItemText primary={this.props.messages[messageIndex].message}>
-          </ListItemText>
-        </ListItem>
-      );
+      const messages = collapseMessages(this.props.messages);
+      const messageItems = [...Array(messages.length).keys()].map(messageIndex=>{
+        const message = messages[messageIndex];
+        const lines = message.text.length;
+        return [...Array(lines).keys()].map(lineIndex=>
+          <ListItem
+            dense
+            key={"message-" + messageIndex.toString() + "-" + lineIndex.toString()}
+          >
+            <ListItemText
+              dense
+              primary={message.sender && lineIndex === 0 ? message.sender.name
+                      : !message.sender ? message.text[lineIndex]
+                                        : undefined
+              }
+              secondary={message.sender ? message.text[lineIndex] : undefined}
+            />
+          </ListItem>
+        );
+      });
 
       const onMessageChange = (event)=>
       {

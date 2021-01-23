@@ -18,6 +18,7 @@ io.on('connection', function(socket) {
   othelloSession.subscribe(io, socket);
 });
 
+
 let server = http.listen(port, () => {
   if (require.main === module) {
     console.log(`Socket.IO server running at http://localhost:${port}/`);
