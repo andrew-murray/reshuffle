@@ -9,7 +9,6 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Device from "./Device";
-import Typography from '@material-ui/core/Typography';
 
 const collapseMessages = (messages)=>{
   let outputMessages = [];
@@ -56,10 +55,8 @@ class ChatDrawer extends React.Component
           >
             <ListItemText
               dense
-              primary={message.sender && lineIndex === 0 ? message.sender.name
-                      : !message.sender ? message.text[lineIndex]
-                                        : undefined
-              }
+              primary={message.sender ? message.sender.name
+                                      : message.text[lineIndex]}
               secondary={message.sender ? message.text[lineIndex] : undefined}
             />
           </ListItem>
