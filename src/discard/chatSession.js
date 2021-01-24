@@ -67,7 +67,7 @@ function joinChatRoom(io, socket, roomID, name)
   const clientID = rooms.generateStrongID(senders.map(sender=>sender.id));
   if(!clientID)
   {
-    console.log("Failed to generate clientID");
+    console.error("Failed to generate clientID");
     return;
   }
   sessionData[roomID].senders.set(socket.id, {
@@ -78,6 +78,14 @@ function joinChatRoom(io, socket, roomID, name)
   const existingMessages = getChatHistory(roomID);
 
   socket.on('disconnect', reason => {
+    // send update to say player has left
+    if(io.sockets.adapter.rooms.has(roomID))
+    {
+      socket.to(roomID).emit(
+        'chat.receive',
+        { text: name + " has left." }
+      );
+    }
     deleteChatIfNecessary(io, roomID);
   });
 
@@ -90,6 +98,12 @@ function joinChatRoom(io, socket, roomID, name)
   {
     socket.emit('chat.receive', constructMessageToSend(roomID,msg));
   }
+  // send update to say player has joined
+  socket.emit('chat.receive', {text: 'You have joined room ' + roomID});
+  socket.to(roomID).emit(
+    'chat.receive',
+    {text: name + " has joined."}
+  );
 }
 
 function subscribe(io,socket)
