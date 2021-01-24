@@ -10,27 +10,6 @@ import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Device from "./Device";
 
-const collapseMessages = (messages)=>{
-  let outputMessages = [];
-  for(const message of messages)
-  {
-    if(outputMessages.length
-      && message.sender
-      && outputMessages[outputMessages.length-1].sender
-      && outputMessages[outputMessages.length-1].sender.id === message.sender.id)
-    {
-      outputMessages[outputMessages.length-1].text.push(message.text);
-    }
-    else
-    {
-      let m = Object.assign({}, message);
-      m.text = [ message.text];
-      outputMessages.push(m);
-    }
-  }
-  return outputMessages;
-};
-
 class ChatDrawer extends React.Component
 {
     constructor(props)
@@ -44,23 +23,21 @@ class ChatDrawer extends React.Component
 
     render()
     {
-      const messages = collapseMessages(this.props.messages);
+      const messages = this.props.messages;
       const messageItems = [...Array(messages.length).keys()].map(messageIndex=>{
         const message = messages[messageIndex];
         const lines = message.text.length;
-        return [...Array(lines).keys()].map(lineIndex=>
-          <ListItem
+        return <ListItem
+          dense
+          key={"message-" + messageIndex.toString()}
+        >
+          <ListItemText
             dense
-            key={"message-" + messageIndex.toString() + "-" + lineIndex.toString()}
-          >
-            <ListItemText
-              dense
-              primary={message.sender ? message.sender.name
-                                      : message.text[lineIndex]}
-              secondary={message.sender ? message.text[lineIndex] : undefined}
-            />
-          </ListItem>
-        );
+            primary={message.sender ? message.sender.name
+                                    : message.text}
+            secondary={message.sender ? message.text : undefined}
+          />
+        </ListItem>
       });
 
       const onMessageChange = (event)=>
