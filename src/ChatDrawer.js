@@ -26,7 +26,6 @@ class ChatDrawer extends React.Component
       const messages = this.props.messages;
       const messageItems = [...Array(messages.length).keys()].map(messageIndex=>{
         const message = messages[messageIndex];
-        const lines = message.text.length;
         return <ListItem
           dense
           key={"message-" + messageIndex.toString()}
