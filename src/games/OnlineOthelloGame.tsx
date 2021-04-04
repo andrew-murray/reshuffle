@@ -26,7 +26,11 @@ const othelloStyles = (theme) => { return {
 const mp3File = "zapsplat_impacts_wood_thin_small_panel_knock_hit_lite_muted_004_39796.mp3";
 const notifyNoise = new Audio(process.env.PUBLIC_URL + "/" + mp3File);
 
-class OthelloWithChat extends React.Component
+type Props = {
+  roomID: string
+};
+
+class OthelloWithChat extends React.Component<Props>
 {
   state = {
     messages: [],

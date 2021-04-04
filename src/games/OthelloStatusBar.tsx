@@ -14,7 +14,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function OthelloStatusBar(props) {
+type Props = {
+  role: number,
+  blackScore: number,
+  whiteScore: number,
+  active: boolean
+};
+
+function OthelloStatusBar(props: Props) {
 
   const classes = useStyles();
   const blackFirst = props.role === OthelloRules.labels.black;

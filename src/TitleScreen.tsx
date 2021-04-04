@@ -30,7 +30,13 @@ const infoStyles = {
   right: 0
 };
 
-class TitleScreen extends React.Component
+type TitleScreenProps = {
+  onCreate: any,
+  history: any,
+  match: any
+};
+
+class TitleScreen extends React.Component<TitleScreenProps>
 {
 
   state = {

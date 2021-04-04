@@ -10,7 +10,12 @@ import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Device from "./Device";
 
-class ChatDrawer extends React.Component
+type PropTypes = {
+  messages: Array<any>
+  onSend: (string)=>void
+};
+
+class ChatDrawer extends React.Component<PropTypes>
 {
     constructor(props)
     {
@@ -31,7 +36,6 @@ class ChatDrawer extends React.Component
           key={"message-" + messageIndex.toString()}
         >
           <ListItemText
-            dense
             primary={message.sender ? message.sender.name
                                     : message.text}
             secondary={message.sender ? message.text : undefined}

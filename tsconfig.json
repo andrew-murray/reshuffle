@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2018",
     "lib": [
       "dom",
       "dom.iterable",
@@ -10,7 +10,11 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": false,
+
+    "strict": false,                         /* Enable all strict type-checking options. */
+    "noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
+    "strictFunctionTypes": false,             /* Enable strict checking of function types. */
+
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
