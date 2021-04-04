@@ -24,4 +24,8 @@ yarn-error.log*
 
 .eslintcache
 
+# typescript output for tsx
 src/react-app-env.d.ts
+
+# typescript output
+index.js
