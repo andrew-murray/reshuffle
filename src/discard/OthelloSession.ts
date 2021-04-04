@@ -23,7 +23,7 @@ const dataForPlayer = (data, playerID) =>
 
 const refreshClientState = (io, roomID) =>
 {
-  for( playerID of sessionData[roomID].players.keys() )
+  for( const playerID of sessionData[roomID].players.keys() )
   {
     io.to(playerID).emit("othello.update",dataForPlayer(sessionData[roomID], playerID) );
   }
@@ -90,9 +90,10 @@ const swapRoles = (io,socket,roomID)=>
   {
     const playerArray = Array.from(sessionData[roomID].players);
     const updatedPlayerArray = playerArray.map(idAndRole =>[
-      idAndRole[0],
-      idAndRole[1] !== null ?  OthelloRules.opponentForPlayer(idAndRole[1]) : null
-    ]);
+        idAndRole[0],
+        idAndRole[1] !== null ?  OthelloRules.opponentForPlayer(idAndRole[1]) : null
+      ] as [string,string]
+    );
     const updatedPlayers = new Map( updatedPlayerArray );
     sessionData[roomID].players = updatedPlayers;
   }
@@ -104,7 +105,7 @@ const countObservers = (players) =>
   let observerCount = 0;
   for( let playerKind of players.values() )
   {
-    observerCount += playerKind === null;
+    observerCount += playerKind === null ? 1 : 0;
   }
   return observerCount;
 };
@@ -262,8 +263,8 @@ const subscribe = (io, socket, options)=>{
   });
 };
 
-module.exports = {
-  initialiseStorage: initialiseStorage,
-  subscribe: subscribe,
-  refreshClientState: refreshClientState
+export {
+  initialiseStorage,
+  subscribe,
+  refreshClientState
 };

@@ -53,9 +53,9 @@ function generateStrongID(collisions)
   return candidate;
 }
 
-module.exports = {
-  generateSingleStrongID: generateSingleStrongID,
-  generateStrongID: generateStrongID,
-  randomID: randomID,
-  findVacantRoom: findVacantRoom
+export {
+  generateSingleStrongID,
+  generateStrongID,
+  randomID,
+  findVacantRoom
 };

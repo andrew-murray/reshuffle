@@ -1,5 +1,5 @@
 const CircularBuffer = require("circular-buffer");
-const rooms = require("./rooms");
+const rooms = require("./Rooms");
 const debug = require("debug")("chat");
 
 let sessionData = {};
@@ -64,7 +64,7 @@ function joinChatRoom(io, socket, roomID, name)
 
   const senders = Array.from(sessionData[roomID].senders.values());
   // returns null on failure
-  const clientID = rooms.generateStrongID(senders.map(sender=>sender.id));
+  const clientID = rooms.generateStrongID(senders.map((sender: any) => sender.id));
   if(!clientID)
   {
     console.error("Failed to generate clientID");
@@ -94,7 +94,7 @@ function joinChatRoom(io, socket, roomID, name)
     emitChatMessage(io, roomID, socket.id, msg);
   });
 
-  for(msg of existingMessages)
+  for(const msg of existingMessages)
   {
     socket.emit('chat.receive', constructMessageToSend(roomID,msg));
   }
@@ -148,9 +148,9 @@ function subscribe(io,socket)
   });
 }
 
-module.exports = {
-  initialiseStorage: initialiseStorage,
-  subscribe: subscribe,
-  emitChatMessage: emitChatMessage,
-  getChatHistory: getChatHistory
-};
+export {
+  initialiseStorage,
+  subscribe,
+  emitChatMessage,
+  getChatHistory  
+}

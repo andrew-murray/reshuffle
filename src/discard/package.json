@@ -5,6 +5,7 @@
   "description": "discard - room-based game/chat backend",
   "repository": "https://github.com/andrew-murray/discard.git",
   "dependencies": {
+    "@types/node": "^14.14.37",
     "circular-buffer": "^1.0.3",
     "debug": "^4.3.1",
     "express": "^4.17.1",
@@ -12,8 +13,7 @@
     "socket.io": "^3.0.3"
   },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "nodemon",
     "test": "jest",
     "test-watch": "jest --watchAll"
   },

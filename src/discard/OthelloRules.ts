@@ -66,7 +66,7 @@ const changesFromPlay = (game, role, pos) =>
 {
   if(game[pos[0]][pos[1]] === labels.white || game[pos[0]][pos[1]] === labels.black)
   {
-    return {};
+    return [];
   }
   const opponent = opponentForPlayer(role);
   const gameMaxSize = Math.max(game.length, game[0].length);
@@ -255,16 +255,18 @@ const changesForAllPositions = (game, role) => {
   return results;
 }
 
-exports.boardsEqual = boardsEqual;
-exports.canPlay = canPlay;
-exports.changesForAllPositions = changesForAllPositions;
-exports.changesFromPlay = changesFromPlay;
-exports.comparePosition = comparePosition;
-exports.countCellsForRole = countCellsForRole;
-exports.createBoardStateWithMove = createBoardStateWithMove;
-exports.createEmptyBoardState = createEmptyBoardState;
-exports.createInitialBoardState = createInitialBoardState;
-exports.isGameCoordinate = isGameCoordinate;
-exports.opponentForPlayer = opponentForPlayer;
-exports.playerCanPlay = playerCanPlay;
-exports.labels = labels;
+export {
+  boardsEqual,
+  canPlay,
+  changesForAllPositions,
+  changesFromPlay,
+  comparePosition,
+  countCellsForRole,
+  createBoardStateWithMove,
+  createEmptyBoardState,
+  createInitialBoardState,
+  isGameCoordinate,
+  opponentForPlayer,
+  playerCanPlay,
+  labels
+}

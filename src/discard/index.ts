@@ -26,11 +26,3 @@ let server = http.listen(port, () => {
 });
 
 const path = `http://localhost:${port}/`;
-
-module.exports = {
-  io: io,
-  server: server,
-  path: path,
-  othello: othelloSession,
-  chat: chatSession
-}
