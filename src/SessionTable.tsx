@@ -33,7 +33,17 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SessionTable(props) {
+type RoomData = {
+  playerCount: number,
+  observerCount: number,
+  name: string
+};
+
+type Props = React.HTMLAttributes<HTMLElement> & {
+  rooms: Array<RoomData>
+};
+
+const SessionTable : React.FunctionComponent<Props> = (props) => {
   const classes = useStyles();
   // the only weird behaviour in the below,
   // is we ensure the table "non-empty" ish, when provided an empty list of rows
@@ -66,3 +76,5 @@ export default function SessionTable(props) {
     </TableContainer>
   );
 }
+
+export default SessionTable;

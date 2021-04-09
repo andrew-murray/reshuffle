@@ -7,7 +7,12 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 
-function TitledDialog(props) {
+type Props = React.HTMLAttributes<HTMLElement> &  {
+  open: bool,
+  onClose: ()=>void
+};
+
+const TitledDialog : React.FunctionComponent<Props> = (props) => {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>

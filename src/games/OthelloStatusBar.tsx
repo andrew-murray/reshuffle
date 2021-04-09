@@ -18,11 +18,11 @@ type Props = {
   role: number,
   blackScore: number,
   whiteScore: number,
-  active: boolean
+  active: number
 };
 
-function OthelloStatusBar(props: Props) {
-
+const OthelloStatusBar : React.FunctionComponent<Props> = (props) =>
+{
   const classes = useStyles();
   const blackFirst = props.role === OthelloRules.labels.black;
   const blackActive = OthelloRules.labels.black === props.active;

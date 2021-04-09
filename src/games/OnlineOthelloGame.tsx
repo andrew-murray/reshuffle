@@ -6,33 +6,33 @@ import OthelloStatusBar from "./OthelloStatusBar"
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import TextEntryDialog from "../TextEntryDialog"
 import socket from "../socket"
-
-const othelloStyles = (theme) => { return {
-  root: {
-    display: "flex"
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  chatDrawer: {
-    width: 300
-  }
-} };
 
 const mp3File = "zapsplat_impacts_wood_thin_small_panel_knock_hit_lite_muted_004_39796.mp3";
 const notifyNoise = new Audio(process.env.PUBLIC_URL + "/" + mp3File);
 
-type Props = {
-  roomID: string
+type Props = React.HTMLAttributes<HTMLElement> & {
+  roomID: string,
+  classes: any
 };
 
-class OthelloWithChat extends React.Component<Props>
+type StateType = {
+  messages: Array<any>,
+  board?: Array<Array<number>> | null,
+  role?: number | null,
+  activePlayer?: number | null,
+  status?: string | null,
+  joinedRoom?: string | null,
+  windowWidth: number,
+  windowHeight: number,
+  lastMove?: Array<number> | null
+};
+
+class OthelloWithChat extends React.Component<Props, StateType>
 {
-  state = {
+  state : StateType = {
     messages: [],
     board: null,
     role: null,
@@ -43,7 +43,7 @@ class OthelloWithChat extends React.Component<Props>
     windowHeight: 0,
     lastMove: null
   }
-  constructor(props)
+  constructor(props: Props)
   {
     super(props)
     // I think this is the cleanest way to implement this functionality
@@ -51,7 +51,7 @@ class OthelloWithChat extends React.Component<Props>
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
-  connectToRoom(roomID, name)
+  connectToRoom(roomID : string, name: string)
   {
     this.setState(
       { joinedRoom: roomID },
@@ -63,24 +63,29 @@ class OthelloWithChat extends React.Component<Props>
   }
 
   updateWindowDimensions() {
-    this.setState((props,state)=>{ return{ windowWidth: window.innerWidth, windowHeight: window.innerHeight } });
+    // fixme: why is this wrong?
+    /*
+    this.setState((props,state)=>{
+      return{ ...state, windowWidth: window.innerWidth, windowHeight: window.innerHeight }
+    });
+    */
   }
 
   componentDidMount() {
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
-    socket.on('chat.receive', (data)=>{
-      this.setState( (state, props) => {
-          return {messages: state.messages.concat(data)};
+    socket.on('chat.receive', (data: any)=>{
+      this.setState( (state) => {
+          return {...state, messages: state.messages.concat(data)};
       });
     });
-    socket.on('othello.status', (text)=>{
-      this.setState( (state, props) => {
-        return {messages: state.messages.concat({isStatus: true, text: text})}
+    socket.on('othello.status', (text: string)=>{
+      this.setState( (state) => {
+        return {...state, messages: state.messages.concat({isStatus: true, text: text})}
       });
     });
-    socket.on('othello.update', (othelloState)=>{
-      this.setState((state,props)=>{
+    socket.on('othello.update', (othelloState: any)=>{
+      this.setState((state)=>{
         const stateInvalid = !state.board
           || !state.activePlayer
           || !state.role
@@ -96,6 +101,7 @@ class OthelloWithChat extends React.Component<Props>
             notifyNoise.play();
           }
           return {
+            ...state,
             board: othelloState.board,
             activePlayer: othelloState.activePlayer,
             role: othelloState.role,
@@ -105,7 +111,7 @@ class OthelloWithChat extends React.Component<Props>
         }
         else
         {
-          return {};
+          return state;
         }
       })
     });
@@ -212,4 +218,15 @@ class OthelloWithChat extends React.Component<Props>
   }
 }
 
-export default withStyles(othelloStyles)(OthelloWithChat);
+export default withStyles((theme) => createStyles({
+  root: {
+    display: "flex"
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  chatDrawer: {
+    width: 300
+  }
+}))(OthelloWithChat);

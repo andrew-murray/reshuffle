@@ -23,7 +23,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "socket.io-client": "^3.0.5",
-    "typescript": "^4.2.0",
+    "typescript": "^4.2.4",
     "web-vitals": "^0.2.4"
   },
   "resolutions": {
@@ -61,6 +61,10 @@
     ]
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
+    "@typescript-eslint/eslint-plugin": "^4.21.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
     "gh-pages": "^3.1.0",
     "nodemon": "^2.0.7"
   }

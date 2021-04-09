@@ -8,7 +8,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 
-function TextEntryDialog(props) {
+type Props = React.HTMLAttributes<HTMLElement> & {
+
+};
+
+const TextEntryDialog : React.FunctionComponent<Props> = (props) => {
 
   const [current, setCurrent] = React.useState("");
 

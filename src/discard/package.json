@@ -10,7 +10,8 @@
     "debug": "^4.3.1",
     "express": "^4.17.1",
     "human-id": "^2.0.1",
-    "socket.io": "^3.0.3"
+    "socket.io": "^3.0.3",
+    "typescript": "^4.1.0"
   },
   "scripts": {
     "start": "nodemon",

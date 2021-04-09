@@ -10,24 +10,33 @@ import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Device from "./Device";
 
-type PropTypes = {
+type PropTypes = React.HTMLAttributes<HTMLElement> & {
   messages: Array<any>
-  onSend: (string)=>void
+  onSend: (message: string)=>void
 };
 
-class ChatDrawer extends React.Component<PropTypes>
+type StateType = {
+  currentMessage: string,
+  chatDrawerOpen: boolean
+};
+
+class ChatDrawer extends React.Component<PropTypes, StateType>
 {
-    constructor(props)
+    state = {
+      currentMessage: "",
+      chatDrawerOpen: true
+    }
+    constructor(props: PropTypes)
     {
       super(props);
-      this.state = {
-        currentMessage: "",
-        chatDrawerOpen: true
-      }
     }
 
-    render()
+    render() : any
     {
+      const mobile = Device.detectMobile();
+      const mobileIOS = mobile && Device.detectIOS();
+      const DrawerComponent = !mobile ? Drawer : SwipeableDrawer;
+
       const messages = this.props.messages;
       const messageItems = [...Array(messages.length).keys()].map(messageIndex=>{
         const message = messages[messageIndex];
@@ -43,12 +52,12 @@ class ChatDrawer extends React.Component<PropTypes>
         </ListItem>
       });
 
-      const onMessageChange = (event)=>
+      const onMessageChange = (event: any)=>
       {
         this.setState( {currentMessage: event.target.value} );
       };
 
-      const onChatSend = (event)=>
+      const onChatSend = (event: any) =>
       {
         if(this.state.currentMessage && this.props.onSend){
           const currentMessage = this.state.currentMessage;
@@ -66,10 +75,6 @@ class ChatDrawer extends React.Component<PropTypes>
         alignItems: "flex-end"
       };
       const drawerStyle = Object.assign( Object.assign({}, localStyle), this.props.style );
-
-      const mobile = Device.detectMobile();
-      const mobileIOS = mobile && Device.detectIOS();
-      const DrawerComponent = !mobile ? Drawer : SwipeableDrawer;
       // another option for this list, is react-window?
       return (
           <DrawerComponent

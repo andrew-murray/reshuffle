@@ -2,9 +2,26 @@ import React, { Component } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
 import OthelloRules from "./OthelloRules";
 
-class OthelloCell extends React.Component{
+type CellPropTypes = React.HTMLAttributes<HTMLElement> & {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  player: number,
+  impossibleColor: string,
+  gameState: number,
+  highlight: boolean,
+  possible: boolean,
+  onClick: ()=>void
+};
 
-  state = {
+type CellStateType = {
+  hovered: boolean
+};
+
+class OthelloCell extends React.Component<CellPropTypes, CellStateType> {
+
+  state : CellStateType = {
     hovered: false
   }
 
@@ -74,10 +91,18 @@ class OthelloCell extends React.Component{
       </React.Fragment>
     );
   }
+}
+
+type BoardPropTypes = React.HTMLAttributes<HTMLElement> & {
+  game: Array<Array<number>>,
+  showMovesForPlayer: number,
+  width: number,
+  height: number,
+  highlightCell?: Array<number>,
+  onMove: (move: {position: Array<number>})=>void
 };
 
-
-class OthelloBoard extends Component {
+class OthelloBoard extends Component<BoardPropTypes> {
   render() {
     let availableMoves = [];
     if(this.props.showMovesForPlayer)
@@ -102,7 +127,7 @@ class OthelloBoard extends Component {
       ).length > 0;
     };
 
-    const makeMove = (y,x,possible)=>
+    const makeMove = (y : number,x : number,possible : boolean)=>
     {
       if(this.props.onMove && possible)
       {
@@ -117,7 +142,7 @@ class OthelloBoard extends Component {
       const xStart = x * cellWidth;
       const movePossible = moveIsPossible(cellState, [y,x]);
       const highlightCell = this.props.highlightCell && this.props.highlightCell[0] === y && this.props.highlightCell[1] === x;
-      const clickHandler = movePossible ? (event)=>{makeMove(y,x,true)} : undefined;
+      const clickHandler = movePossible ? ()=>{makeMove(y,x,true)} : undefined;
       return (
         <OthelloCell
           key={"othello-cell-" + y.toString() + "-" + x.toString()}

@@ -18,10 +18,9 @@ import socket from "./socket"
 
 function App() {
 
-  let history = useHistory();
+  const history = useHistory();
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
 
   const theme = React.useMemo(
     () =>
@@ -34,7 +33,7 @@ function App() {
   );
 
   React.useEffect(()=>{
-    const onRoomCreated = (roomID) =>
+    const onRoomCreated = (roomID: string) =>
     {
       history.push("othello/room/" + roomID);
     };
@@ -49,7 +48,7 @@ function App() {
           <Switch>
             <Route
               exact path="/"
-              component={(props)=>
+              component={(props: any)=>
                 <TitleScreen
                   onCreate={()=>{socket.emit("chat.create");}}
                   match={props.match}
@@ -62,7 +61,7 @@ function App() {
             </Route>
             <Route
               path="/othello/room/:roomID/"
-              component={(props)=> <OnlineOthelloGame roomID={props.match.params.roomID} />}
+              component={(props: any)=> <OnlineOthelloGame roomID={props.match.params.roomID} />}
             />
           </Switch>
         </div>
@@ -70,7 +69,7 @@ function App() {
   );
 }
 
-function RouterRoot()
+const RouterRoot : React.FunctionComponent = () =>
 {
   return (
     <Router basename={process.env.PUBLIC_URL}>

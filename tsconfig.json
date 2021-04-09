@@ -11,8 +11,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 
-    "strict": false,                         /* Enable all strict type-checking options. */
-    "noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
+    "strict": true,                         /* Enable all strict type-checking options. */
+    "noImplicitAny": true,                   /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noImplicitThis": true,
+    "strictNullChecks": true,
     "strictFunctionTypes": false,             /* Enable strict checking of function types. */
 
     "forceConsistentCasingInFileNames": true,
